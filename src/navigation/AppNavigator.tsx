@@ -1,67 +1,168 @@
-import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
-import { createNativeStackNavigator } from '@react-navigation/native-stack';
-import { createContext, useContext, useState } from 'react';
+import React, { useState } from 'react';
+import { useApp } from '../context/AppContext';
+import SplashScreen from '../screens/SplashScreen';
 import WelcomeScreen from '../screens/onboarding/WelcomeScreen';
-import WaterScreen from '../screens/onboarding/WaterScreen';
+import FitnessGoalsScreen from '../screens/onboarding/FitnessGoalsScreen';
+import WellnessPreferencesScreen from '../screens/onboarding/WellnessPreferencesScreen';
+import PeriodSetupScreen from '../screens/onboarding/PeriodSetupScreen';
 import AIWellnessCoach from '../screens/onboarding/AIWellnessCoach';
-
-const Stack = createNativeStackNavigator();
-
-const Tabs = createBottomTabNavigator();
-
-const OnboardingContext = createContext<{
-  onboardingComplete: () => void;
-} | null>(null);
-
-export const useOnboarding = () => {
-  const context = useContext(OnboardingContext);
-  if (!context) {
-    throw new Error('useOnboarding must be used within OnboardingStack');
-  }
-  return context;
-};
-
-//  Bottom Tabs for Authenticated Users
-function BottomTabs() {}
-
-//  Main Stack for Authenticated Users
-function MainStack() {}
-
-//  Auth Stack Navigator for login/signup screens
-function AuthStack() {}
-
-// Onboarding Stack Navigator for first time users
-function OnboardingStack({
-  onboardingComplete,
-}: {
-  onboardingComplete: () => void;
-}) {
-  return (
-    <OnboardingContext.Provider value={{ onboardingComplete }}>
-      <Stack.Navigator>
-        {/* Add your onboarding screens here */}
-        <Stack.Screen name="Welcome" component={WelcomeScreen} />
-        <Stack.Screen name="Water" component={WaterScreen} />
-        <Stack.Screen name="WellnessCoach" component={AIWellnessCoach} />
-      </Stack.Navigator>
-    </OnboardingContext.Provider>
-  );
-}
+import WaterGoalScreen from '../screens/onboarding/WaterGoalScreen';
+import LoginScreen from '../screens/auth/LoginScreen';
+import SignUpScreen from '../screens/auth/SignUpScreen';
+import ForgotPasswordScreen from '../screens/auth/ForgotPasswordScreen';
 
 const AppNavigator = () => {
+  const { state, dispatch } = useApp();
+  const [showSplash, setShowSplash] = useState(true);
+  const [authScreen, setAuthScreen] = useState<'login' | 'signup' | 'forgot'>('login');
+  const [currentOnboardingStep, setCurrentOnboardingStep] = useState(0);
+  const [showFitnessCategories, setShowFitnessCategories] = useState(false);
+  const [showWorkOutDetails, setShowWorkOutDetails] = useState(false);
+  const [showExercise, setShowExercise] = useState(false);
+  const [showCompletion, setShowCompletion] = useState(false);
+  const [showWaterTracker, setShowWaterTracker] = useState(false);
+  const [showStepTracker, setShowStepTracker] = useState(false);
+  const [showPeriodTracker, setShowPeriodTracker] = useState(false);
+  const [showNotifications, setShowNotifications] = useState(false);
+  const [showMeditationCategories, setShowMeditationCategories] =
+    useState(false);
+  const [showMeditationSession, setShowMeditationSession] = useState(false);
+  const [showSettings, setShowSettings] = useState(false);
+  const [onboardingData, setOnboardingData] = useState({
+    fitnessGoals: [] as string[],
+    wellnessPrefs: [] as string[],
+    periodData: {} as any,
+    waterGoal: 3000,
+  });
 
-  const [isOnboardingComplete, setIsOnboardingComplete] = useState(false);
+  // Splash Screen function
+  const handleSplashScreenFinish = () => {
+    setShowSplash(false);
+  };
 
-  // const handleOnboardingComplete = () => {
+  const handleOnboardingNext = () => {
+    if (currentOnboardingStep < 5) {
+      setCurrentOnboardingStep(currentOnboardingStep + 1);
+    } else {
+      dispatch({
+        type: 'SET_ONBOARDED',
+        payload: true,
+      });
+      if (onboardingData.waterGoal) {
+        dispatch({ type: 'SET_WATER_GOAL', payload: onboardingData.waterGoal });
+      }
+      if (onboardingData.fitnessGoals.length > 0) {
+        dispatch({
+          type: 'SET_FITNESS_GOALS',
+          payload: onboardingData.fitnessGoals,
+        });
+      }
+      if (onboardingData.wellnessPrefs.length > 0) {
+        dispatch({
+          type: 'SET_WELLNESS_PREFERENCES',
+          payload: onboardingData.wellnessPrefs,
+        });
+      }
+    }
+  };
 
-  // }
+  // Onboarding Data
+  const handleFitnessGoals = (goals: string[]) => {
+    setOnboardingData(prev => ({ ...prev, fitnessGoals: goals }));
+    handleOnboardingNext();
+  };
 
-  if (!isOnboardingComplete) {
-    return (
-      <OnboardingStack onboardingComplete={() => setIsOnboardingComplete(true)} />
-    );
+  const handleWellnessPrefs = (prefs: string[]) => {
+    setOnboardingData(prev => ({ ...prev, wellnessPrefs: prefs }));
+    handleOnboardingNext();
+  };
+
+  const handlePeriodData = (data: any) => {
+    setOnboardingData(prev => ({ ...prev, periodData: data }));
+    dispatch({ type: 'SET_PERIOD_DATA', payload: data });
+    handleOnboardingNext();
+  };
+
+  const handleWaterGoal = (goal: number) => {
+    setOnboardingData(prev => ({ ...prev, waterGoal: goal }));
+    dispatch({ type: 'SET_WATER_GOAL', payload: goal });
+    handleOnboardingNext();
+  };
+
+  const handleLogin = () => {
+    dispatch({ type: 'SET_AUTHENTICATED', payload: true });
+    dispatch({
+      type: 'SET_USER',
+      payload: {
+        name: 'Sarah',
+        email: 'sarah@example.com',
+        age: 28,
+        currentGoal: 'General Wellness',
+      },
+    });
+  };
+
+  const handleSignUp = (name: string, email: string) => {
+    dispatch({ type: 'SET_AUTHENTICATED', payload: true });
+    dispatch({
+      type: 'SET_USER',
+      payload: { name, email, age: 28, currentGoal: 'General Wellness' },
+    });
+  };
+
+  //   Splash Screen
+  if (showSplash) {
+    return <SplashScreen onFinish={handleSplashScreenFinish} />;
   }
-  
-}
+
+
+  // Onboarding Flow
+  if (!state.isOnboarded) {
+    switch (currentOnboardingStep) {
+      case 0:
+        return <WelcomeScreen onNext={handleOnboardingNext} />;
+      case 1:
+        return <FitnessGoalsScreen onNext={handleFitnessGoals} />;
+      case 2:
+        return <WellnessPreferencesScreen onNext={handleWellnessPrefs} />;
+      case 3:
+        return <PeriodSetupScreen onNext={handlePeriodData} />;
+      case 4:
+        return <WaterGoalScreen onNext={handleWaterGoal} initialGoal={3000} />;
+      case 5:
+        return <AIWellnessCoach onNext={handleOnboardingNext} onBack={() => setCurrentOnboardingStep(prev => prev - 1)} />;
+      default:
+        return null;
+    }
+  }
+
+
+  // Auth Flow
+  if (!state.isAuthenticated) {
+    switch (authScreen) {
+      case 'login':
+        return (
+          <LoginScreen
+            onLogin={handleLogin}
+            onNavigateToSignUp={() => setAuthScreen('signup')}
+            onNavigateToForgotPassword={() => setAuthScreen('forgot')}
+          />
+        );
+      case 'signup':
+        return (
+          <SignUpScreen
+            onSignUp={handleSignUp}
+            onNavigateToLogin={() => setAuthScreen('login')}
+          />
+        );
+      case 'forgot':
+        return (
+          <ForgotPasswordScreen onBack={() => setAuthScreen('login')} />
+        );
+      default:
+        return null;
+    }
+  }
+};
 
 export default AppNavigator;
