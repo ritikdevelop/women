@@ -27,18 +27,16 @@ interface WelcomeScreenProps {
 
 const Petal = ({ style }: any) => <View style={[styles.petal, style]} />;
 
-interface WelcomeScreenProps {
-  onNext: () => void;
-}
-
 const WelcomeScreen: React.FC<WelcomeScreenProps> = ({ onNext }) => {
   const opacity = useSharedValue(0);
   const translateY = useSharedValue(20);
   const floatValue = useSharedValue(0);
+  const imageOpacity = useSharedValue(0);
 
   useEffect(() => {
     opacity.value = withDelay(300, withSpring(1));
     translateY.value = withDelay(300, withSpring(0));
+    imageOpacity.value = withDelay(500, withSpring(1));
 
     floatValue.value = withRepeat(
       withSequence(
@@ -56,6 +54,7 @@ const WelcomeScreen: React.FC<WelcomeScreenProps> = ({ onNext }) => {
   }));
 
   const animatedImageStyle = useAnimatedStyle(() => ({
+    opacity: imageOpacity.value,
     transform: [{ translateY: floatValue.value }],
   }));
 
@@ -145,6 +144,7 @@ const WelcomeScreen: React.FC<WelcomeScreenProps> = ({ onNext }) => {
               source={require('../../assets/welcome.png')}
               style={styles.characterImage}
               resizeMode="contain"
+              fadeDuration={0}
             />
           </Animated.View>
 
@@ -167,6 +167,8 @@ const WelcomeScreen: React.FC<WelcomeScreenProps> = ({ onNext }) => {
 
             <View style={styles.pagination}>
               <View style={[styles.dot, styles.activeDot]} />
+              <View style={styles.dot} />
+              <View style={styles.dot} />
               <View style={styles.dot} />
               <View style={styles.dot} />
             </View>
