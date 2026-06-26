@@ -4,17 +4,21 @@ import {
   Text,
   StyleSheet,
   TouchableOpacity,
-  TextInput,
   Dimensions,
   ScrollView,
 } from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
 import Colors from '../../theme/colors';
+import CustomDatePicker from '../../components/CustomDatePicker';
 
 const { width } = Dimensions.get('window');
 
 interface PeriodSetupScreenProps {
-  onNext: (data: { lastPeriodDate: string; cycleLength: number; periodLength: number }) => void;
+  onNext: (data: {
+    lastPeriodDate: string;
+    cycleLength: number;
+    periodLength: number;
+  }) => void;
   initialData?: any;
 }
 
@@ -25,6 +29,7 @@ const PeriodSetupScreen: React.FC<PeriodSetupScreenProps> = ({
   const [lastPeriod, setLastPeriod] = useState(
     initialData?.lastPeriodDate || '',
   );
+  const [showDatePicker, setShowDatePicker] = useState(false);
   const [cycleLength, setCycleLength] = useState(
     initialData?.cycleLength?.toString() || '28',
   );
@@ -32,7 +37,19 @@ const PeriodSetupScreen: React.FC<PeriodSetupScreenProps> = ({
     initialData?.periodLength?.toString() || '5',
   );
 
-  const isValid = lastPeriod.length > 0 && cycleLength.length > 0 && periodLength.length > 0;
+  const formatDate = (date: Date) => {
+    const day = date.getDate().toString().padStart(2, '0');
+    const month = (date.getMonth() + 1).toString().padStart(2, '0');
+    const year = date.getFullYear();
+    return `${day}/${month}/${year}`;
+  };
+
+  const handleDateSelect = (date: Date) => {
+    setLastPeriod(formatDate(date));
+  };
+
+  const isValid =
+    lastPeriod.length > 0 && cycleLength.length > 0 && periodLength.length > 0;
 
   return (
     <ScrollView style={styles.container} showsVerticalScrollIndicator={false}>
@@ -46,19 +63,28 @@ const PeriodSetupScreen: React.FC<PeriodSetupScreenProps> = ({
         {/* Cycle Illustration */}
         <View style={styles.cycleIllustration}>
           <View style={styles.cyclePhase}>
-            <View style={[styles.phaseDot, { backgroundColor: Colors.period }]} />
+            <View
+              style={[styles.phaseDot, { backgroundColor: Colors.period }]}
+            />
             <Text style={styles.phaseLabel}>Period</Text>
           </View>
           <View style={styles.cycleLine}>
             <LinearGradient
-              colors={[Colors.period, Colors.fertility, Colors.ovulation, Colors.selfCare]}
+              colors={[
+                Colors.period,
+                Colors.fertility,
+                Colors.ovulation,
+                Colors.selfCare,
+              ]}
               start={{ x: 0, y: 0 }}
               end={{ x: 1, y: 0 }}
               style={styles.cycleLineFill}
             />
           </View>
           <View style={styles.cyclePhase}>
-            <View style={[styles.phaseDot, { backgroundColor: Colors.ovulation }]} />
+            <View
+              style={[styles.phaseDot, { backgroundColor: Colors.ovulation }]}
+            />
             <Text style={styles.phaseLabel}>Ovulation</Text>
           </View>
         </View>
@@ -67,13 +93,23 @@ const PeriodSetupScreen: React.FC<PeriodSetupScreenProps> = ({
         <View style={styles.formContainer}>
           <View style={styles.fieldGroup}>
             <Text style={styles.fieldLabel}>Last Period Date</Text>
-            <TextInput
-              style={styles.input}
-              placeholder="DD/MM/YYYY"
-              placeholderTextColor={Colors.textSecondary}
-              value={lastPeriod}
-              onChangeText={setLastPeriod}
-            />
+            <TouchableOpacity
+              style={styles.dateInput}
+              onPress={() => setShowDatePicker(true)}
+              activeOpacity={0.7}
+            >
+              <Text
+                style={[
+                  styles.dateInputText,
+                  !lastPeriod && { color: Colors.textSecondary },
+                ]}
+              >
+                {lastPeriod || 'Select Date'}
+              </Text>
+              {/* <View style={styles.calendarIcon}>
+                <Text style={{ fontSize: 16 }}></Text>
+              </View> */}
+            </TouchableOpacity>
           </View>
 
           <View style={styles.row}>
@@ -83,16 +119,28 @@ const PeriodSetupScreen: React.FC<PeriodSetupScreenProps> = ({
                 <TouchableOpacity
                   style={styles.stepperButton}
                   onPress={() =>
-                    setCycleLength(Math.max(21, parseInt(cycleLength || '28') - 1).toString())
-                  }>
+                    setCycleLength(
+                      Math.max(
+                        21,
+                        parseInt(cycleLength || '28') - 1,
+                      ).toString(),
+                    )
+                  }
+                >
                   <Text style={styles.stepperText}>-</Text>
                 </TouchableOpacity>
                 <Text style={styles.stepperValue}>{cycleLength} days</Text>
                 <TouchableOpacity
                   style={styles.stepperButton}
                   onPress={() =>
-                    setCycleLength(Math.min(45, parseInt(cycleLength || '28') + 1).toString())
-                  }>
+                    setCycleLength(
+                      Math.min(
+                        45,
+                        parseInt(cycleLength || '28') + 1,
+                      ).toString(),
+                    )
+                  }
+                >
                   <Text style={styles.stepperText}>+</Text>
                 </TouchableOpacity>
               </View>
@@ -104,16 +152,25 @@ const PeriodSetupScreen: React.FC<PeriodSetupScreenProps> = ({
                 <TouchableOpacity
                   style={styles.stepperButton}
                   onPress={() =>
-                    setPeriodLength(Math.max(2, parseInt(periodLength || '5') - 1).toString())
-                  }>
+                    setPeriodLength(
+                      Math.max(2, parseInt(periodLength || '5') - 1).toString(),
+                    )
+                  }
+                >
                   <Text style={styles.stepperText}>-</Text>
                 </TouchableOpacity>
                 <Text style={styles.stepperValue}>{periodLength} days</Text>
                 <TouchableOpacity
                   style={styles.stepperButton}
                   onPress={() =>
-                    setPeriodLength(Math.min(10, parseInt(periodLength || '5') + 1).toString())
-                  }>
+                    setPeriodLength(
+                      Math.min(
+                        10,
+                        parseInt(periodLength || '5') + 1,
+                      ).toString(),
+                    )
+                  }
+                >
                   <Text style={styles.stepperText}>+</Text>
                 </TouchableOpacity>
               </View>
@@ -124,7 +181,7 @@ const PeriodSetupScreen: React.FC<PeriodSetupScreenProps> = ({
 
       <View style={styles.bottomSection}>
         <View style={styles.pagination}>
-          {[0, 1, 2, 3, 4, 5].map((i) => (
+          {[0, 1, 2, 3, 4, 5].map(i => (
             <View
               key={i}
               style={[
@@ -146,16 +203,32 @@ const PeriodSetupScreen: React.FC<PeriodSetupScreenProps> = ({
             })
           }
           activeOpacity={0.8}
-          disabled={!isValid}>
+          disabled={!isValid}
+        >
           <LinearGradient
             colors={isValid ? Colors.wellnessGradient : ['#D4D4D4', '#D4D4D4']}
             start={{ x: 0, y: 0 }}
             end={{ x: 1, y: 1 }}
-            style={styles.buttonGradient}>
+            style={styles.buttonGradient}
+          >
             <Text style={styles.buttonText}>Continue</Text>
           </LinearGradient>
         </TouchableOpacity>
       </View>
+      <CustomDatePicker
+        isVisible={showDatePicker}
+        onClose={() => setShowDatePicker(false)}
+        onSelectDate={handleDateSelect}
+        initialDate={
+          lastPeriod
+            ? new Date(
+                parseInt(lastPeriod.split('/')[2]),
+                parseInt(lastPeriod.split('/')[1]) - 1,
+                parseInt(lastPeriod.split('/')[0]),
+              )
+            : new Date()
+        }
+      />
     </ScrollView>
   );
 };
@@ -221,11 +294,16 @@ const styles = StyleSheet.create({
   },
   formContainer: {
     backgroundColor: Colors.surface,
-    borderRadius: 20,
-    padding: 20,
+    borderRadius: 24,
+    padding: 24,
+    shadowColor: Colors.cardShadow,
+    shadowOffset: { width: 0, height: 8 },
+    shadowOpacity: 0.1,
+    shadowRadius: 12,
     borderWidth: 1,
     borderColor: Colors.border,
     marginBottom: 20,
+    elevation: 4,
   },
   fieldGroup: {
     marginBottom: 20,
@@ -237,6 +315,30 @@ const styles = StyleSheet.create({
     marginBottom: 8,
     textTransform: 'uppercase',
     letterSpacing: 0.5,
+  },
+  dateInput: {
+    backgroundColor: Colors.background,
+    borderRadius: 16,
+    padding: 16,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    borderWidth: 1,
+    borderColor: Colors.border,
+    shadowColor: Colors.cardShadow,
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.05,
+    shadowRadius: 4,
+  },
+  dateInputText: {
+    fontSize: 16,
+    color: Colors.textPrimary,
+    fontWeight: '500',
+  },
+  calendarIcon: {
+    backgroundColor: Colors.nudeBeige,
+    padding: 8,
+    borderRadius: 10,
   },
   input: {
     backgroundColor: Colors.background,
@@ -254,28 +356,28 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     backgroundColor: Colors.background,
-    borderRadius: 12,
+    borderRadius: 16,
     borderWidth: 1,
     borderColor: Colors.border,
     overflow: 'hidden',
   },
   stepperButton: {
-    width: 48,
+    width: 44,
     height: 48,
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: Colors.background,
+    backgroundColor: 'rgba(255, 107, 170, 0.05)',
   },
   stepperText: {
-    fontSize: 22,
+    fontSize: 20,
     color: Colors.primaryPink,
-    fontWeight: '600',
+    fontWeight: '700',
   },
   stepperValue: {
     flex: 1,
     textAlign: 'center',
-    fontSize: 15,
-    fontWeight: '600',
+    fontSize: 14,
+    fontWeight: '700',
     color: Colors.textPrimary,
   },
   bottomSection: {
