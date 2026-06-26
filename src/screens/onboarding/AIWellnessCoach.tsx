@@ -23,17 +23,23 @@ import Animated, {
 
 const { width, height } = Dimensions.get('window');
 
+const Petal = ({ style }: any) => <View style={[styles.petal, style]} />;
+
 interface AIWellnessCoachProps {
   onNext: () => void;
   onBack: () => void;
 }
 
-const AIWellnessCoach: React.FC<AIWellnessCoachProps> = ({ onNext, onBack }) => {
+const AIWellnessCoach: React.FC<AIWellnessCoachProps> = ({
+  onNext,
+  onBack,
+}) => {
   // Animation shared values
   const opacity = useSharedValue(0);
   const translateY = useSharedValue(30);
   const floatValue = useSharedValue(0);
   const bubbleScale = useSharedValue(0);
+  const imageOpacity = useSharedValue(0);
 
   useEffect(() => {
     // Fade in content
@@ -45,6 +51,9 @@ const AIWellnessCoach: React.FC<AIWellnessCoachProps> = ({ onNext, onBack }) => 
       600,
       withSpring(1, { damping: 12, stiffness: 100 }),
     );
+
+    // Fade in image
+    imageOpacity.value = withDelay(400, withSpring(1));
 
     // Gentle floating for character
     floatValue.value = withRepeat(
@@ -63,6 +72,7 @@ const AIWellnessCoach: React.FC<AIWellnessCoachProps> = ({ onNext, onBack }) => 
   }));
 
   const characterAnimatedStyle = useAnimatedStyle(() => ({
+    opacity: imageOpacity.value,
     transform: [{ translateY: floatValue.value }],
   }));
 
@@ -78,15 +88,6 @@ const AIWellnessCoach: React.FC<AIWellnessCoachProps> = ({ onNext, onBack }) => 
         translucent
         backgroundColor="transparent"
       />
-
-      {/* Back Button */}
-      <TouchableOpacity
-        style={styles.backButton}
-        onPress={() => onBack()}
-        activeOpacity={0.7}
-      >
-        <Text style={styles.backArrow}>←</Text>
-      </TouchableOpacity>
 
       <View style={styles.content}>
         {/* Header Title */}
@@ -113,10 +114,75 @@ const AIWellnessCoach: React.FC<AIWellnessCoachProps> = ({ onNext, onBack }) => 
           <Animated.View
             style={[styles.characterContainer, characterAnimatedStyle]}
           >
+            {/* Dense Petal Background */}
+            <Petal
+              style={{
+                top: '5%',
+                left: '10%',
+                transform: [{ rotate: '-15deg' }],
+              }}
+            />
+            <Petal
+              style={{
+                top: '2%',
+                right: '15%',
+                transform: [{ rotate: '20deg' }],
+              }}
+            />
+            <Petal
+              style={{
+                top: '25%',
+                left: '0%',
+                transform: [{ rotate: '-45deg' }],
+              }}
+            />
+            <Petal
+              style={{
+                top: '20%',
+                right: '5%',
+                transform: [{ rotate: '35deg' }],
+              }}
+            />
+            <Petal
+              style={{
+                top: '45%',
+                left: '-5%',
+                transform: [{ rotate: '-20deg' }],
+              }}
+            />
+            <Petal
+              style={{
+                top: '50%',
+                right: '-5%',
+                transform: [{ rotate: '40deg' }],
+              }}
+            />
+            <Petal
+              style={{
+                bottom: '25%',
+                left: '5%',
+                transform: [{ rotate: '10deg' }],
+              }}
+            />
+            <Petal
+              style={{
+                bottom: '20%',
+                right: '10%',
+                transform: [{ rotate: '-30deg' }],
+              }}
+            />
+            <Petal
+              style={{
+                bottom: '40%',
+                right: '20%',
+                transform: [{ rotate: '15deg' }, { scale: 0.8 }],
+              }}
+            />
             <Image
-              source={require('../../assets/welcome_woman.png')}
+              source={require('../../assets/welcome.png')}
               style={styles.characterImage}
               resizeMode="contain"
+              fadeDuration={0}
             />
           </Animated.View>
         </View>
@@ -157,22 +223,10 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: '#FFF5F8',
   },
-  backButton: {
-    position: 'absolute',
-    top: height * 0.06,
-    left: 20,
-    zIndex: 10,
-    padding: 10,
-  },
-  backArrow: {
-    fontSize: 26,
-    color: '#1A1A1A',
-    fontWeight: '400',
-  },
   content: {
     flex: 1,
     paddingHorizontal: 25,
-    paddingTop: height * 0.12,
+    paddingTop: height * 0.1,
     justifyContent: 'space-between',
     paddingBottom: 40,
   },
@@ -190,7 +244,16 @@ const styles = StyleSheet.create({
     flex: 1,
     alignItems: 'center',
     justifyContent: 'center',
-    marginTop: -10,
+    marginTop: 40,
+  },
+  petal: {
+    position: 'absolute',
+    width: 15,
+    height: 25,
+    backgroundColor: '#FFD1E1',
+    borderTopLeftRadius: 15,
+    borderBottomRightRadius: 15,
+    opacity: 0.6,
   },
   // Speech Bubble
   speechBubble: {
@@ -245,13 +308,15 @@ const styles = StyleSheet.create({
   // Character
   characterContainer: {
     width: width * 0.85,
+    marginTop: 80,
     height: height * 0.42,
     alignItems: 'center',
     justifyContent: 'flex-end',
   },
   characterImage: {
-    width: '100%',
-    height: '100%',
+    width: width * 1.2,
+    height: height * 0.65,
+    marginBottom: -40,
   },
   // Footer
   footer: {
