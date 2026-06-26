@@ -1,20 +1,35 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { BackHandler } from 'react-native';
 import { useApp } from '../context/AppContext';
+
+// Splash Screen
 import SplashScreen from '../screens/SplashScreen';
+
+// Onboarding Screens
 import WelcomeScreen from '../screens/onboarding/WelcomeScreen';
 import FitnessGoalsScreen from '../screens/onboarding/FitnessGoalsScreen';
 import WellnessPreferencesScreen from '../screens/onboarding/WellnessPreferencesScreen';
 import PeriodSetupScreen from '../screens/onboarding/PeriodSetupScreen';
 import AIWellnessCoach from '../screens/onboarding/AIWellnessCoach';
 import WaterGoalScreen from '../screens/onboarding/WaterGoalScreen';
+
+// Authentication Screens
 import LoginScreen from '../screens/auth/LoginScreen';
 import SignUpScreen from '../screens/auth/SignUpScreen';
 import ForgotPasswordScreen from '../screens/auth/ForgotPasswordScreen';
 
+// Main Screens
+import HomeScreen from '../screens/main/HomeScreen';
+import FitnessCategoriesScreen from '../screens/main/FitnessScreen';
+import CalendarScreen from '../screens/main/CalendarScreen';
+import ProfileScreen from '../screens/main/ProfileScreen';
+
 const AppNavigator = () => {
   const { state, dispatch } = useApp();
   const [showSplash, setShowSplash] = useState(true);
-  const [authScreen, setAuthScreen] = useState<'login' | 'signup' | 'forgot'>('login');
+  const [authScreen, setAuthScreen] = useState<'login' | 'signup' | 'forgot'>(
+    'login',
+  );
   const [currentOnboardingStep, setCurrentOnboardingStep] = useState(0);
   const [showFitnessCategories, setShowFitnessCategories] = useState(false);
   const [showWorkOutDetails, setShowWorkOutDetails] = useState(false);
@@ -34,6 +49,23 @@ const AppNavigator = () => {
     periodData: {} as any,
     waterGoal: 3000,
   });
+
+  useEffect(() => {
+    const backAction = () => {
+      if (!state.isOnboarded && currentOnboardingStep > 0) {
+        setCurrentOnboardingStep(prev => prev - 1);
+        return true;
+      }
+      return false;
+    };
+
+    const backHandler = BackHandler.addEventListener(
+      'hardwareBackPress',
+      backAction,
+    );
+
+    return () => backHandler.remove();
+  }, [currentOnboardingStep, state.isOnboarded]);
 
   // Splash Screen function
   const handleSplashScreenFinish = () => {
@@ -115,7 +147,6 @@ const AppNavigator = () => {
     return <SplashScreen onFinish={handleSplashScreenFinish} />;
   }
 
-
   // Onboarding Flow
   if (!state.isOnboarded) {
     switch (currentOnboardingStep) {
@@ -130,12 +161,16 @@ const AppNavigator = () => {
       case 4:
         return <WaterGoalScreen onNext={handleWaterGoal} initialGoal={3000} />;
       case 5:
-        return <AIWellnessCoach onNext={handleOnboardingNext} onBack={() => setCurrentOnboardingStep(prev => prev - 1)} />;
+        return (
+          <AIWellnessCoach
+            onNext={handleOnboardingNext}
+            onBack={() => setCurrentOnboardingStep(prev => prev - 1)}
+          />
+        );
       default:
         return null;
     }
   }
-
 
   // Auth Flow
   if (!state.isAuthenticated) {
@@ -156,9 +191,7 @@ const AppNavigator = () => {
           />
         );
       case 'forgot':
-        return (
-          <ForgotPasswordScreen onBack={() => setAuthScreen('login')} />
-        );
+        return <ForgotPasswordScreen onBack={() => setAuthScreen('login')} />;
       default:
         return null;
     }
