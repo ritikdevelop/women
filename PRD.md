@@ -1,798 +1,892 @@
-# 1. Product Overview
+# My Women — Product Requirements Document
 
-My Women is a premium AI-powered women's wellness platform designed to help women understand, track, improve, and manage their health through fitness, menstrual health tracking, hydration monitoring, mindfulness, wellness coaching, and AI-powered guidance.
-
-The application combines:
-
-* Period Tracking
-* Fertility Tracking
-* Mood Tracking
-* Water Tracking
-* Step Tracking
-* Fitness Programs
-* Meditation
-* AI Coaching
-* Voice Assistant
-* Wellness Analytics
-* Rewards & Streaks
-
-My Women provides a supportive and emotionally intelligent experience through Maya AI, a personalized wellness assistant.
+**Version:** 1.0  
+**Last Updated:** June 2026  
+**Platform:** React Native (iOS & Android)  
+**AI Companion:** Maya  
 
 ---
 
-# 2. Vision
+## Table of Contents
 
-To become the most trusted AI-powered wellness companion for women worldwide.
-
----
-
-# 3. Mission
-
-Help women:
-
-* Understand their bodies
-* Build healthy habits
-* Improve mental wellness
-* Track menstrual health
-* Achieve fitness goals
-* Receive personalized AI guidance
-
----
-
-# 4. Target Audience
-
-## Teen Girls
-
-Age:
-13-18
-
-Needs:
-
-* Period education
-* Mood tracking
-* Fitness guidance
-
----
-
-## College Students
-
-Age:
-18-25
-
-Needs:
-
-* Fitness
-* Stress management
-* Hydration
-* Period tracking
+1. [Product Overview](#1-product-overview)
+2. [Vision & Mission](#2-vision--mission)
+3. [Target Audience](#3-target-audience)
+4. [Core Value Proposition](#4-core-value-proposition)
+5. [Brand Identity](#5-brand-identity)
+6. [Design System](#6-design-system)
+7. [Tech Stack](#7-tech-stack)
+8. [App Architecture](#8-app-architecture)
+9. [User Journey & Navigation Flow](#9-user-journey--navigation-flow)
+10. [Splash Screen](#10-splash-screen)
+11. [Onboarding Module](#11-onboarding-module)
+12. [Authentication Module](#12-authentication-module)
+13. [Home Dashboard](#13-home-dashboard)
+14. [Period & Cycle Tracking Module](#14-period--cycle-tracking-module)
+15. [Wellness Calendar](#15-wellness-calendar)
+16. [Fitness Module](#16-fitness-module)
+17. [Water Tracker](#17-water-tracker)
+18. [Step Tracker](#18-step-tracker)
+19. [Meditation Module](#19-meditation-module)
+20. [Maya AI Coach](#20-maya-ai-coach)
+21. [Voice Assistant](#21-voice-assistant)
+22. [Profile Module](#22-profile-module)
+23. [Notifications](#23-notifications)
+24. [Rewards & Streaks](#24-rewards--streaks)
+25. [Settings](#25-settings)
+26. [State Management](#26-state-management)
+27. [Security](#27-security)
+28. [Analytics & Success Metrics](#28-analytics--success-metrics)
+29. [MVP Scope](#29-mvp-scope)
+30. [Future Roadmap](#30-future-roadmap)
 
 ---
 
-## Working Women
+## 1. Product Overview
 
-Age:
-25-40
+**My Women** is a premium AI-powered women's wellness app built in React Native. It combines period tracking, fitness coaching, hydration monitoring, mood logging, step tracking, meditation, and personalized AI guidance into a single emotionally intelligent platform.
 
-Needs:
+The app's AI companion, **Maya**, acts as a wellness coach, women's health expert, and supportive friend — delivering contextual, personalized recommendations across every feature.
 
-* Time-efficient wellness
-* Hormonal insights
-* Productivity support
+### Core Feature Set
 
----
-
-## Married Women
-
-Needs:
-
-* Fertility awareness
-* Pregnancy preparation
-* Wellness management
-
----
-
-# 5. Core Value Proposition
-
-Single platform for:
-
-* Women's health
-* Fitness
-* Wellness
-* Mental health
-* AI coaching
+| Feature | Status |
+|---|---|
+| Splash Screen | ✅ Built |
+| Onboarding (6 steps) | ✅ Built |
+| Authentication (Login / Sign Up / Forgot Password) | ✅ Built |
+| Home Dashboard | ✅ Built |
+| Period & Cycle Calendar | ✅ Built |
+| Fitness Screen | ✅ Built |
+| Water Tracker | ✅ Built |
+| Step Tracker | ✅ Built |
+| Maya AI Coach Screen | ✅ Built |
+| Profile Screen | ✅ Built |
+| Settings | 🔲 Planned |
+| Meditation Module | 🔲 Planned |
+| Voice Assistant | 🔲 Planned |
+| Notifications Center | 🔲 Planned |
+| Rewards Screen | 🔲 Planned |
 
 ---
 
-# 6. Brand Identity
+## 2. Vision & Mission
 
-Product Name:
-My Women
+**Vision:** Become the most trusted AI-powered wellness companion for women worldwide.
 
-Tagline:
-Understand Your Body. Empower Your Life.
-
-AI Companion:
-Maya
-
-Personality:
-
-50% Wellness Coach
-
-30% Women's Health Expert
-
-20% Best Friend
+**Mission:** Help women understand their bodies, build healthy habits, improve mental wellness, track their menstrual cycle, achieve fitness goals, and receive personalized AI guidance — all from a single beautiful app.
 
 ---
 
-# 7. Design System
+## 3. Target Audience
 
-## Colors
+### Teen Girls (13–18)
+- Period education and first-cycle tracking
+- Mood tracking
+- Light fitness guidance
 
-Primary Pink:
-#FF6BAA
+### College Students (18–25)
+- Fitness programs
+- Stress management
+- Hydration tracking
+- Period tracking
 
-Lavender:
-#B89CFF
+### Working Women (25–40)
+- Time-efficient wellness routines
+- Hormonal and cycle insights
+- Productivity support
 
-Nude Beige:
-#F5E7E1
-
-Background:
-#FFF9FB
-
-Surface:
-#FFFFFF
-
-Success:
-#7CCF8A
-
-Warning:
-#F6C667
-
-Text Primary:
-#2D2D2D
-
-Text Secondary:
-#6D6D6D
+### Married Women / Women Planning Pregnancy
+- Fertility awareness and ovulation tracking
+- Wellness management
+- Cycle regularity monitoring
 
 ---
 
-## Typography
+## 4. Core Value Proposition
 
-Primary:
-Poppins
-
-Secondary:
-Inter
-
----
-
-## Design Style
-
-* Premium
-* Feminine
-* Soft gradients
-* Rounded components
-* Glassmorphism
-* Emotional design
-* Modern startup aesthetic
+A single platform that covers:
+- Women's health and cycle tracking
+- Fitness and movement
+- Mental wellness and meditation
+- Hydration and nutrition tracking
+- AI-powered personal coaching via Maya
 
 ---
 
-# 8. User Journey
+## 5. Brand Identity
 
-Splash
-
-↓
-
-Onboarding
-
-↓
-
-Authentication
-
-↓
-
-Home Dashboard
-
-↓
-
-Daily Wellness Activities
-
-↓
-
-AI Guidance
-
-↓
-
-Habit Building
-
-↓
-
-Rewards
+| Attribute | Value |
+|---|---|
+| Product Name | My Women |
+| Tagline | Understand Your Body. Empower Your Life. |
+| AI Companion | Maya |
+| Maya's Personality | 50% Wellness Coach · 30% Women's Health Expert · 20% Best Friend |
 
 ---
 
-# 9. Authentication Module
+## 6. Design System
 
-## Login
+### Color Palette
 
-Fields:
+| Token | Hex |
+|---|---|
+| Primary Pink | `#FF6BAA` |
+| Lavender | `#B89CFF` |
+| Ovulation Blue | `#7CCF8A` |
+| Wellness Event Yellow | `#F6C667` |
+| Self Care Green | (soft green) |
+| Nude Beige | `#F5E7E1` |
+| Background | `#FFF9FB` |
+| Surface | `#FFFFFF` |
+| Success | `#7CCF8A` |
+| Warning | `#F6C667` |
+| Text Primary | `#2D2D2D` |
+| Text Secondary | `#6D6D6D` |
+| Tab Active | Pink |
+| Tab Inactive | Muted gray |
 
-* Email
-* Password
+### Typography
 
-Actions:
+- **Primary Font:** Poppins
+- **Secondary Font:** Inter
 
-* Login
-* Google Login
-* Apple Login
-* Forgot Password
+### Design Language
 
----
+- Premium, feminine, emotionally warm
+- Soft gradients and pastel palettes
+- Rounded cards and components (border radius 16–24)
+- Subtle glassmorphism
+- Micro-animations on mount and interaction (300–500ms, ease-out cubic)
+- Modern startup aesthetic
 
-## Register
+### Animation Standards
 
-Fields:
-
-* Full Name
-* Email
-* Password
-* Confirm Password
-
----
-
-## Forgot Password
-
-Flow:
-
-Email
-
-↓
-
-OTP
-
-↓
-
-Reset Password
-
----
-
-# 10. Home Dashboard
-
-## Widgets
-
-### Cycle Status
-
-Displays:
-
-* Cycle Day
-* Current Phase
-* Next Period
+All animations use `react-native-reanimated` v4 with these conventions:
+- Mount animations: fade + slide-up (400ms, ease-out-quad, ~100–200ms delay)
+- Circular progress rings: animate from 0 → value (900ms, ease-out-cubic)
+- Mood buttons: bounce scale on press (`withSequence` spring)
+- Flame/pulse icons: repeating gentle scale pulse
+- Step counter: animated count-up from 0 to value (1000ms, ease-out-cubic)
 
 ---
 
-### Water Intake
+## 7. Tech Stack
 
-Displays:
-
-* Daily Goal
-* Current Progress
-
----
-
-### Steps
-
-Displays:
-
-* Daily Steps
-* Calories
-* Distance
-
----
-
-### Workout Progress
-
-Displays:
-
-* Daily Completion
+| Layer | Technology |
+|---|---|
+| Framework | React Native 0.86.0 |
+| Language | TypeScript 5.8 |
+| Navigation | React Navigation 7 (Native Stack + Bottom Tabs) |
+| Animations | react-native-reanimated 4.4 |
+| SVG Graphics | react-native-svg 15 |
+| Gradients | react-native-linear-gradient 2.8 |
+| Safe Area | react-native-safe-area-context 5.5 |
+| Gesture Handling | react-native-gesture-handler 3 |
+| Lottie Animations | lottie-react-native 7 |
+| Persistent Storage | @react-native-async-storage/async-storage 3 |
+| State Management | React Context API + useReducer |
+| Testing | Jest + React Native preset |
+| Linting | ESLint + Prettier |
 
 ---
 
-### Mood Tracker
+## 8. App Architecture
 
-Displays:
+### Directory Structure
 
-* Current Mood
+```
+src/
+├── assets/              # Images, avatars (maya_avatar.png, welcome.png)
+├── components/          # Shared components (CustomDatePicker)
+├── context/             # AppContext (global state)
+├── navigation/          # AppNavigator (all stacks + tab bar)
+├── screens/
+│   ├── SplashScreen.tsx
+│   ├── auth/            # Login, SignUp, ForgotPassword
+│   ├── onboarding/      # Welcome, FitnessGoals, WellnessPreferences,
+│   │                    #   PeriodSetup, WaterGoal, AIWellnessCoach
+│   ├── main/            # Home, Fitness, Calendar, AICoach, Profile
+│   ├── Features/        # WaterTracker, StepTracker
+│   └── settings/        # (planned)
+├── theme/               # colors.ts, typography
+└── utils/               # types.ts (all shared TypeScript types)
+```
+
+### Navigation Structure
+
+```
+AppNavigator
+├── SplashScreen (shown once on launch)
+├── OnboardingStack (if not onboarded)
+│   ├── WelcomeScreen
+│   ├── FitnessGoalsScreen
+│   ├── WellnessPreferencesScreen
+│   ├── PeriodSetupScreen
+│   ├── WaterGoalScreen
+│   └── AIWellnessCoach
+├── AuthStack (if onboarded but not authenticated)
+│   ├── LoginScreen
+│   ├── SignUpScreen
+│   └── ForgotPasswordScreen
+└── MainStack (authenticated)
+    ├── MainTabs (Bottom Tab Bar)
+    │   ├── Home
+    │   ├── Fitness
+    │   ├── AICoach (Maya — center floating avatar button)
+    │   ├── Calendar
+    │   └── Profile
+    ├── WaterTracker (pushed from Home)
+    └── StepTracker (pushed from Home)
+```
+
+### Global State (AppContext)
+
+The app uses a single React Context + `useReducer` for global state, persisted to `AsyncStorage`:
+
+| State Key | Type | Description |
+|---|---|---|
+| `isOnboarded` | boolean | Whether the user has completed onboarding |
+| `isAuthenticated` | boolean | Login status |
+| `user` | User | Name, email, age, goals, cycleData, fitnessGoals, wellnessPreferences |
+| `waterLogs` | WaterLog[] | Daily hydration entries |
+| `waterGoal` | number | Daily water target in ml (default 3000) |
+| `moodEntries` | MoodEntry[] | Mood log history |
+| `symptomEntries` | SymptomEntry[] | Cycle symptom log |
+| `streak` | Streak | Current and longest streak |
+| `badges` | Badge[] | Earned badges |
+| `notifications` | Notification[] | In-app notification list |
+| `chatMessages` | ChatMessage[] | Maya AI chat history |
+| `steps` | number | Today's step count |
+| `stepGoal` | number | Daily step goal (default 10,000) |
+| `completedWorkouts` | Workout[] | Workout completion history |
+| `meditationHistory` | string[] | Session IDs |
+| `currentCycleDay` | number | Today's cycle day |
 
 ---
 
-### Maya Insight Card
+## 9. User Journey & Navigation Flow
 
-AI-generated recommendations
-
----
-
-### Motivation Card
-
-Daily quotes
-
----
-
-### Streak Card
-
-Displays wellness streaks
-
----
-
-# 11. Period Tracking Module
-
-## Features
-
-### Cycle Tracking
-
-Fields:
-
-* Last Period Date
-* Cycle Length
-* Period Length
-
----
-
-### Ovulation Tracking
-
-Displays:
-
-* Ovulation Date
-* Fertility Window
+```
+App Launch
+    │
+    ▼
+Splash Screen (animated, ~2s)
+    │
+    ▼
+[First Launch] ──► Onboarding Flow (6 screens)
+    │                   ├── Welcome
+    │                   ├── Fitness Goals
+    │                   ├── Wellness Preferences
+    │                   ├── Period Setup
+    │                   ├── Water Goal
+    │                   └── AI Wellness Coach (intro to Maya)
+    │
+    ▼
+Auth Flow
+    ├── Login ──► (Google / Apple / Email)
+    ├── Sign Up
+    └── Forgot Password (Email → OTP → Reset)
+    │
+    ▼
+Main App (Bottom Tab Navigation)
+    ├── Home Dashboard
+    ├── Fitness Screen
+    ├── Maya AI Coach (center tab)
+    ├── Calendar (Period Tracker)
+    └── Profile
+    │
+    ▼
+Feature Screens (pushed from Home)
+    ├── Water Tracker
+    └── Step Tracker
+```
 
 ---
 
-### PMS Tracking
+## 10. Splash Screen
 
-Displays:
-
-* PMS Window
+- Animated brand intro screen
+- Displays Maya avatar and app logo
+- Uses Lottie or custom animation
+- Transitions automatically after ~2 seconds
+- Checks `isOnboarded` state to route correctly
 
 ---
+
+## 11. Onboarding Module
+
+A 6-step guided flow shown only on first launch. All selections are saved to global state via `dispatch`.
+
+### Step 1 — Welcome Screen
+- Maya avatar intro
+- Brand tagline
+- CTA: "Get Started"
+
+### Step 2 — Fitness Goals
+- Multi-select goal options (e.g. Weight Loss, Strength, Flexibility, General Wellness)
+- Saved to `user.fitnessGoals`
+- Dispatches: `SET_FITNESS_GOALS`
+
+### Step 3 — Wellness Preferences
+- Multi-select wellness areas (e.g. Meditation, Hydration, Sleep, Mental Health)
+- Saved to `user.wellnessPreferences`
+- Dispatches: `SET_WELLNESS_PREFERENCES`
+
+### Step 4 — Period Setup
+- Inputs: Last period date, Cycle length, Period duration
+- Uses `CustomDatePicker` component
+- Dispatches: `SET_PERIOD_DATA`
+
+### Step 5 — Water Goal
+- Slider or preset options to set daily water target (ml)
+- Default: 3,000 ml (3L)
+- Dispatches: `SET_WATER_GOAL`
+
+### Step 6 — AI Wellness Coach (Maya Intro)
+- Animated intro card for Maya
+- Explains Maya's role as wellness coach
+- "Back" and "Get Started" actions
+- Completing this step dispatches: `SET_ONBOARDED: true`
+
+---
+
+## 12. Authentication Module
+
+### Login Screen
+- Fields: Email, Password
+- Actions: Login, Google Sign-In, Apple Sign-In, Forgot Password link
+- On success: dispatches `SET_AUTHENTICATED: true` + `SET_USER`
+
+### Sign Up Screen
+- Fields: Full Name, Email, Password, Confirm Password
+- On success: dispatches `SET_AUTHENTICATED: true` + `SET_USER`
+
+### Forgot Password Screen
+- Flow: Email input → OTP verification → Reset Password
+- Back navigation
+
+> **Note:** Authentication is currently mocked (no backend). Dispatching `SET_AUTHENTICATED` and `SET_USER` with mock data simulates a logged-in state.
+
+---
+
+## 13. Home Dashboard
+
+The main screen users see after login. Shows a personalized daily snapshot with 7 key health widgets.
+
+### Header
+- Personalized greeting: "Good Morning, [Name] 🌸"
+- Current date display
+- Bell icon with unread notification dot
+
+### Widgets
+
+#### Cycle Status Banner
+- Gradient banner (pink-to-rose)
+- Shows: Cycle Day number, Ovulation countdown ("Ovulation in X Days")
+- Shows: Current phase message ("You're in your fertile window")
+- Animated entrance (fade + scale on mount)
+
+#### Water Intake Card
+- Shows: Current intake (L) vs daily goal (L)
+- Animated circular progress ring (0 → current %, 900ms)
+- Tappable → navigates to `WaterTrackerScreen`
+- Color: Blue (`#4FC3F7`)
+
+#### Steps Card
+- Shows: Animated count-up from 0 → current step count
+- Animated circular progress ring (0 → % of 10K goal)
+- Tappable → navigates to `StepTrackerScreen`
+- Color: Green (`#4CAF50`)
+
+#### Workout Progress Card
+- Shows: Today's workout completion percentage
+- Animated circular progress ring
+- Pulsing flame emoji icon (repeating spring animation)
+- Color: Orange (`#FF9800`)
+
+#### Period Card
+- Shows: "Next Period in X Days"
+- Animated dotted half-moon arc (right-side semicircle)
+- Active dots filled with Primary Pink
+
+#### Mood Card
+- 5 emoji options: 😄 😊 😐 😠 😔
+- Selecting a mood triggers bounce-scale animation
+- Selected mood highlighted with lavender background + shadow
+
+#### Maya's Insight Card
+- Pink-tinted card (`#FFF0F6`)
+- AI-generated wellness tip relevant to cycle phase
+- Maya avatar thumbnail
+
+#### Daily Motivation Card
+- Short motivational quote
+- 🌸 flower decoration
+
+#### Wellness Streak Row
+- "🔥 X Day Wellness Streak"
+- Tappable (navigates to Rewards — planned)
+
+---
+
+## 14. Period & Cycle Tracking Module
+
+Accessible from the **Calendar** tab.
+
+### Monthly Calendar
+
+- 7-column week grid (Sun–Sat)
+- Month navigation (previous/next chevrons)
+- Day cells with color-coded markers:
+
+| Marker | Color | Meaning |
+|---|---|---|
+| Period Ring | Primary Pink | Period day |
+| Filled Pink | Primary Pink | Today |
+| Lavender fill | `#B89CFF` | Ovulation day |
+| Yellow fill | `#F6C667` | PMS window |
+| Self-care border | Soft green | Self-care day |
+| Light purple fill | Lavender | Fertility window |
+
+### Phase Info Card (Animated)
+- Current phase name (e.g. "Ovulation")
+- Cycle Day badge (lavender pill)
+- Animated donut ring with gradient (pink → lavender → purple)
+- Flower SVG icon centered in ring
+- Entrance animation: fade + slide up (420ms, 150ms delay)
+
+### Phase Timeline
+- Period window dates
+- Fertility window dates
+- Ovulation date
+- PMS window dates
+- Each row has color dot + label + date range
+
+### Quick Actions Row
+- 4 action buttons: Symptoms | Mood | Cramp | Notes
+- Each button opens a logging bottom sheet (planned)
+
+### Cycle Health Score Card
+- Score out of 100 (e.g. "85 / 100")
+- Status label ("Good", "Fair", "Needs Attention")
+- Semi-circular gauge with green gradient
+- Animated entrance
 
 ### Symptom Tracking
+Symptoms supported: Cramps, Headache, Acne, Fatigue, Bloating, Mood Swings
 
-Symptoms:
-
-* Cramps
-* Headache
-* Acne
-* Fatigue
-* Bloating
-* Mood Swings
+### Mood Logging
+- Daily mood entry from Calendar screen
+- Stored in `moodEntries[]`
 
 ---
 
-### Mood Tracking
+## 15. Wellness Calendar
 
-Daily mood logging
+The Calendar tab doubles as both the period tracker and general wellness calendar. Color coding:
 
----
-
-### Cycle Insights
-
-AI-generated health insights
-
----
-
-# 12. Wellness Calendar
-
-Color Coding
-
-Pink:
-Period Days
-
-Purple:
-Fertility Window
-
-Blue:
-Ovulation
-
-Green:
-Self-Care
-
-Yellow:
-Wellness Events
+| Color | Event Type |
+|---|---|
+| Pink | Period days |
+| Purple/Lavender | Fertility window |
+| Lavender fill | Ovulation |
+| Yellow | PMS window / Wellness events |
+| Green border | Self-care reminder |
 
 ---
 
-# 13. Fitness Module
+## 16. Fitness Module
 
-## Categories
+Accessible from the **Fitness** tab.
 
-### Weight Loss
+### Workout Categories
+- Weight Loss
+- Weight Gain / Muscle Gain
+- Strength Training
+- Flexibility & Yoga
+- Post-Pregnancy Recovery
 
-### Weight Gain
+### Workout Detail Screen
+- Workout title and description
+- Video player or image guide
+- Step-by-step instructions
+- Duration estimate
+- Calories burned
+- Difficulty level
 
-### Strength
-
-### Flexibility
-
-### Post Pregnancy
-
----
-
-## Workout Detail
-
-Displays:
-
-* Video
-* Images
-* Instructions
-* Duration
-* Calories
-
----
-
-## Exercise Screen
-
-Features:
-
-* Timer
-* Audio Guide
-* Progress
+### Active Exercise Screen
+- Exercise timer (count-up or countdown)
+- Audio guide / voice cues
+- Rep counter
+- Progress through the set
+- On completion: dispatches `COMPLETE_WORKOUT`
 
 ---
 
-# 14. Water Tracker
+## 17. Water Tracker
 
-## Features
+Feature screen accessible from the Water card on Home or as a standalone route (`WaterTracker`).
 
-Daily Goal
+### Main Display
+- Large animated circular progress ring (blue gradient, 230px)
+- Inner: percentage value (count-up animation), intake (L) / goal (L), label
+- Wave SVG animation at the bottom of the ring inner circle
 
-Quick Add
+### Quick Add Buttons
+- Preset amounts: +100ml, +250ml, +500ml, +1L
+- Each tap: spring scale animation + increments intake state
+- Capped at daily goal
 
-Custom Intake
+### Reminder Row
+- Displays current reminder interval (e.g. "Every 1 Hour")
+- "Edit" button → opens reminder settings (planned)
 
-Hourly Reminders
-
-Progress Ring
-
-Hydration Analytics
-
----
-
-# 15. Step Tracker
-
-## Features
-
-Daily Steps
-
-Weekly Trends
-
-Distance
-
-Calories Burned
-
-Activity Charts
+### State Behavior
+- Intake stored in `waterLogs[]` via `ADD_WATER_LOG`
+- Goal stored in `waterGoal` (set during onboarding)
+- Data persisted to `AsyncStorage`
 
 ---
 
-# 16. Meditation Module
+## 18. Step Tracker
 
-## Categories
+Feature screen accessible from the Steps card on Home (`StepTracker` route).
 
-Sleep
+### Display
+- Daily step count (large, animated)
+- Progress toward goal (10,000 steps default)
+- Distance (km/miles)
+- Calories burned estimate
 
-Stress Relief
+### Charts
+- Weekly step trend bar chart
+- Daily breakdown
 
-Focus
-
-Anxiety Relief
-
-Self Love
-
-Breathing
-
----
-
-## Session Features
-
-Audio
-
-Timer
-
-Progress
-
-Favorites
-
-Downloads
+### State
+- Step count stored in `steps` field
+- Goal stored in `stepGoal`
+- Updated via `SET_STEPS` dispatch
 
 ---
 
-# 17. Maya AI Assistant
+## 19. Meditation Module
 
-## Chat Features
+> **Status:** Planned (not yet built)
 
-Text Chat
+### Session Categories
+- Sleep
+- Stress Relief
+- Focus
+- Anxiety Relief
+- Self Love
+- Breathing Exercises
 
-Suggested Questions
-
-Health Guidance
-
-Workout Guidance
-
-Cycle Insights
-
-Hydration Coaching
-
-Mental Wellness Support
-
----
-
-## AI Capabilities
-
-Context Awareness
-
-Personalized Responses
-
-Health Recommendations
-
-Goal-Based Coaching
-
-Habit Building
+### Session Player Features
+- Background audio playback
+- Countdown timer
+- Progress indicator
+- Favorites / save session
+- Offline downloads
+- Session history stored in `meditationHistory[]`
 
 ---
 
-# 18. Voice Assistant
+## 20. Maya AI Coach
 
-## Features
+Accessible from the **center tab button** (floating Maya avatar in the tab bar).
 
-Voice Input
+### Chat Interface
+- Full-screen conversational chat UI
+- Maya avatar displayed in header
+- Chat bubbles with message history (persisted in `chatMessages[]`)
+- Suggested quick-reply questions
 
-Voice Output
+### AI Capabilities
+- Context-aware responses (uses cycle day, mood, recent activity)
+- Personalized wellness recommendations
+- Workout guidance aligned with cycle phase
+- Cycle phase education and insights
+- Hydration coaching
+- Mental wellness support
 
-Speech Recognition
+### Conversation Topics Supported
+- "How is my cycle affecting my energy today?"
+- "What workout should I do on day 12?"
+- "How much water should I drink?"
+- "I'm feeling anxious — what helps?"
+- General health Q&A
 
-Voice Commands
-
-Realtime Transcription
-
----
-
-# 19. Notifications Center
-
-Categories:
-
-Water
-
-Fitness
-
-Meditation
-
-Period
-
-AI Recommendations
-
-System Notifications
+> **Note:** AI responses are currently simulated/rule-based. LLM integration (GPT-4 / Claude) is planned for a future phase.
 
 ---
 
-# 20. Rewards & Streaks
+## 21. Voice Assistant
 
-## Streak Types
+> **Status:** Planned (not yet built)
 
-Water
-
-Fitness
-
-Meditation
-
-Mood Tracking
-
-Period Logging
+### Features
+- Voice input for hands-free interaction with Maya
+- Text-to-speech output (Maya's voice)
+- Real-time speech recognition
+- Voice commands for quick actions (log water, check cycle, start meditation)
 
 ---
 
-## Badges
+## 22. Profile Module
 
-Hydration Queen
+Accessible from the **Profile** tab.
 
-Fitness Star
+### Profile Card
+- Avatar photo (with camera icon to update)
+- Name, age, height, weight display
+- "Edit Profile" button
 
-Meditation Master
+### Health Summary Row (4 cards)
+| Card | Value Shown |
+|---|---|
+| Cycle | Current day (e.g. "Day 12") |
+| Steps | Today's steps (e.g. "7,834") |
+| Water | Intake vs goal (e.g. "1.8 / 3 L") |
+| Workout | Completion % (e.g. "68%") |
 
-Cycle Expert
+### Current Streaks (5 items)
+| Streak | Icon Color |
+|---|---|
+| Water | Blue |
+| Workout | Purple |
+| Meditation | Purple |
+| Mood | Yellow |
+| Cycle | Pink |
 
-Consistency Champion
+### Maya's Insight Card
+- Gradient card (pink gradient)
+- Personalized encouragement message from Maya
+- Maya avatar
 
----
-
-# 21. Profile Module
-
-## Personal Information
-
-Name
-
-Age
-
-Weight
-
-Height
-
-Goals
-
----
-
-## Health Summary
-
-Cycle Insights
-
-Mood Trends
-
-Fitness Progress
-
-Hydration Reports
-
-Achievements
+### Edit Profile (Planned)
+- Update: name, DOB, height, weight, goal, profile photo
+- Connected to `SET_USER` dispatch
 
 ---
 
-# 22. Settings
+## 23. Notifications
 
-## Account
+> **Status:** Planned (not yet built)
 
-Profile
+### Notification Types
+| Category | Example |
+|---|---|
+| Water Reminder | "Time to drink water! 💧" |
+| Fitness | "Your workout is scheduled in 30 min" |
+| Meditation | "3-min breathing exercise?" |
+| Period | "Your period is expected in 3 days" |
+| AI Recommendation | "Maya has a tip for you today" |
+| System | App updates, sync status |
 
-Password
-
-Delete Account
-
----
-
-## Privacy
-
-Consent Management
-
-Data Export
-
-Data Removal
-
----
-
-## Notifications
-
-Reminder Preferences
+### Notification State
+- Stored in `notifications[]`
+- `MARK_NOTIFICATION_READ` action
+- `ADD_NOTIFICATION` action
+- Bell icon on Home and Profile shows red dot when unread
 
 ---
 
-## AI Settings
+## 24. Rewards & Streaks
 
-Assistant Personality
+> **Status:** Partially built (streak display on Home + Profile); full Rewards screen planned.
 
-Voice Selection
+### Streak Types
+| Type | Tracked By |
+|---|---|
+| Water | Daily water goal completion |
+| Fitness | Daily workout completion |
+| Meditation | Daily meditation session |
+| Mood Tracking | Daily mood log |
+| Period Logging | Consistent cycle logging |
 
-Response Style
+### Streak State
+- `streak.current` — current active streak (days)
+- `streak.longest` — all-time longest streak
+- `streak.lastActivity` — ISO date string
+- Updated via `UPDATE_STREAK` dispatch
 
----
-
-
-JWT Authentication
-
-Refresh Tokens
-
-Password Hashing
-
-Biometric Login
-
-HTTPS
-
-Encryption at Rest
-
-Secure Storage
-
----
-
-# 26. Analytics
-
-Daily Active Users
-
-Monthly Active Users
-
-Retention
-
-Workout Completion
-
-Water Goal Completion
-
-Meditation Usage
-
-AI Engagement
-
-Cycle Tracking Usage
+### Badges
+| Badge | Trigger |
+|---|---|
+| Hydration Queen 💧 | 7-day water streak |
+| Fitness Star 🏋️ | 7-day workout streak |
+| Meditation Master 🧘 | 7-day meditation streak |
+| Cycle Expert 🌸 | 3 months of consistent logging |
+| Consistency Champion 🔥 | 30-day wellness streak |
 
 ---
 
-# 27. Success Metrics
+## 25. Settings
 
-Day 1 Retention > 50%
+> **Status:** Directory exists; screens not yet built.
 
-Day 30 Retention > 20%
+### Account
+- Edit profile
+- Change password
+- Delete account
 
-Average Session > 8 Minutes
+### Privacy
+- Consent management
+- Data export
+- Data removal request
 
-Workout Completion > 60%
+### Notifications
+- Toggle categories (water, fitness, meditation, period, AI)
+- Reminder timing preferences
 
-Water Goal Completion > 50%
+### AI Settings
+- Maya personality mode
+- Voice selection (if voice assistant enabled)
+- Response style (brief vs detailed)
 
-AI Engagement > 40%
-
----
-
-# 28. Future Roadmap
-
-Phase 2
-
-* Pregnancy Tracking
-* Nutrition Tracking
-* Sleep Tracking
-* Wearable Integration
-* Community Features
-* Telehealth
-* Doctor Consultations
-
-Phase 3
-
-* AI Health Reports
-* Personalized Wellness Plans
-* Marketplace
-* Premium Subscription
-* Women's Health Ecosystem
+### App Preferences
+- Dark mode toggle (planned)
+- Units (metric / imperial)
+- Language
 
 ---
 
-# MVP Scope
+## 26. State Management
 
-Included:
+The app uses a single `AppContext` (React Context + `useReducer`) for all global state. Data is persisted to `AsyncStorage` on every state change and restored on app launch.
 
-✓ Authentication
+### Key Dispatch Actions
 
-✓ Dashboard
-
-✓ Period Tracker
-
-✓ Mood Tracker
-
-✓ Water Tracker
-
-✓ Step Tracker
-
-✓ Fitness Module
-
-✓ Meditation Module
-
-✓ Maya AI Chat
-
-✓ Voice Assistant
-
-✓ Notifications
-
-✓ Rewards
-
-✓ Profile
-
-✓ Settings
-
-Not Included:
-
-✗ Community
-
-✗ Marketplace
-
-✗ TeleMedicine
-
-✗ Pregnancy Tracking
-
-✗ Nutrition Tracking
-
-✗ Subscription Plans
+| Action | Payload | Effect |
+|---|---|---|
+| `SET_ONBOARDED` | boolean | Marks onboarding complete |
+| `SET_AUTHENTICATED` | boolean | Sets login status |
+| `SET_USER` | User object | Stores user profile |
+| `ADD_WATER_LOG` | WaterLog | Appends hydration entry |
+| `SET_WATER_GOAL` | number (ml) | Updates daily water target |
+| `ADD_MOOD` | MoodEntry | Appends mood log |
+| `ADD_SYMPTOM` | SymptomEntry | Appends symptom log |
+| `UPDATE_STREAK` | Streak | Updates streak counters |
+| `ADD_BADGE` | Badge | Unlocks a badge |
+| `ADD_NOTIFICATION` | Notification | Adds to notification list |
+| `MARK_NOTIFICATION_READ` | string (id) | Marks notification as read |
+| `ADD_CHAT_MESSAGE` | ChatMessage | Appends to Maya chat history |
+| `SET_STEPS` | number | Updates today's step count |
+| `SET_CYCLE_DAY` | number | Updates current cycle day |
+| `SET_PERIOD_DATA` | PeriodData | Stores cycle configuration |
+| `SET_FITNESS_GOALS` | string[] | Updates fitness goal selections |
+| `SET_WELLNESS_PREFERENCES` | string[] | Updates wellness preference selections |
+| `COMPLETE_WORKOUT` | Workout | Logs a completed workout |
+| `RESTORE_STATE` | Partial<AppState> | Hydrates state from AsyncStorage |
 
 ---
 
-End of Document
+## 27. Security
+
+| Requirement | Status |
+|---|---|
+| JWT Authentication | Planned (backend) |
+| Refresh Token Rotation | Planned |
+| Password Hashing (bcrypt) | Planned (backend) |
+| Biometric Login (FaceID / TouchID) | Planned |
+| HTTPS for all API calls | Required |
+| Encrypted storage for sensitive data | Planned |
+| Secure token storage (react-native-keychain) | Planned |
+| Input validation and sanitization | Required |
+
+---
+
+## 28. Analytics & Success Metrics
+
+### Key Metrics to Track
+
+| Metric | Target |
+|---|---|
+| Day 1 Retention | > 50% |
+| Day 30 Retention | > 20% |
+| Average Session Duration | > 8 minutes |
+| Workout Completion Rate | > 60% |
+| Water Goal Completion | > 50% |
+| AI (Maya) Engagement Rate | > 40% |
+| Meditation Usage | > 30% |
+| Cycle Tracking Consistency | > 60% |
+
+### Events to Track
+- Onboarding step completions
+- Feature screen opens
+- Water intake logs
+- Mood logs
+- Workout starts / completions
+- Maya chat sessions
+- Streak milestones
+- Badge unlocks
+
+---
+
+## 29. MVP Scope
+
+### Included in MVP
+
+| Feature | Built |
+|---|---|
+| Splash Screen | ✅ |
+| Onboarding (6 screens) | ✅ |
+| Login / Sign Up / Forgot Password | ✅ |
+| Home Dashboard (all 7 widgets) | ✅ |
+| Period & Cycle Calendar | ✅ |
+| Fitness Screen | ✅ |
+| Water Tracker (full) | ✅ |
+| Step Tracker | ✅ |
+| Maya AI Coach Screen | ✅ |
+| Profile Screen | ✅ |
+| Global state + AsyncStorage persistence | ✅ |
+| Custom Bottom Tab Bar with Maya avatar | ✅ |
+
+### Remaining to Build (MVP)
+
+| Feature | Priority |
+|---|---|
+| Settings Screen | High |
+| Notifications Center + Local Push Notifications | High |
+| Rewards & Badges Screen | Medium |
+| Meditation Module | Medium |
+| Voice Assistant (Maya) | Low |
+| Edit Profile Screen | High |
+| Backend API + Real Auth (JWT) | High |
+
+### Explicitly Out of MVP Scope
+
+- Community / Social Features
+- Marketplace
+- TeleMedicine / Doctor Consultations
+- Pregnancy Tracking
+- Nutrition Tracking
+- Subscription / In-App Purchases
+- Wearable Integration (Apple Watch, Fitbit)
+
+---
+
+## 30. Future Roadmap
+
+### Phase 2
+- Pregnancy tracking module
+- Nutrition and meal logging
+- Sleep tracking integration
+- Wearable integration (Apple Health, Google Fit, Fitbit)
+- Community features (forums, challenges)
+- Telehealth / doctor consultations
+
+### Phase 3
+- AI-generated monthly health reports
+- Personalized wellness plans (Maya generates a weekly plan)
+- Marketplace (supplements, wellness products)
+- Premium subscription tier
+- Women's health ecosystem (partner integrations)
+- Multi-language support
+- Menopause tracking module
+
+---
+
+*End of Document*
+
