@@ -11,9 +11,6 @@ import {
 import LinearGradient from 'react-native-linear-gradient';
 import Svg, { Circle, Path } from 'react-native-svg';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { useNavigation } from '@react-navigation/native';
-import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
-import type { MainStackParamList } from '../../navigation/AppNavigator';
 import Animated, {
   useSharedValue,
   useAnimatedStyle,
@@ -249,7 +246,6 @@ const AnimatedStepsCounter: React.FC = () => {
 // ─── HomeScreen ───────────────────────────────────────────────────────────────
 
 const HomeScreen: React.FC = () => {
-  const navigation = useNavigation<NativeStackNavigationProp<MainStackParamList>>();
   const [selectedMood, setSelectedMood] = useState<number>(0);
 
   // ── Animation 1: Greeting — fade + slide up ──────────────────────────────
