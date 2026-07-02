@@ -32,10 +32,12 @@ const LoginScreen: React.FC<LoginScreenProps> = ({
   return (
     <KeyboardAvoidingView
       style={styles.container}
-      behavior={Platform.OS === 'ios' ? 'padding' : 'height'}>
+      behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+    >
       <ScrollView
         contentContainerStyle={styles.scrollContent}
-        showsVerticalScrollIndicator={false}>
+        showsVerticalScrollIndicator={false}
+      >
         <View style={styles.topSection}>
           <Text style={styles.greeting}>Welcome Back</Text>
           <Text style={styles.subtitle}>Sign in to continue your journey</Text>
@@ -74,12 +76,14 @@ const LoginScreen: React.FC<LoginScreenProps> = ({
           <TouchableOpacity
             style={styles.signInButton}
             onPress={onLogin}
-            activeOpacity={0.8}>
+            activeOpacity={0.8}
+          >
             <LinearGradient
               colors={Colors.wellnessGradient}
               start={{ x: 0, y: 0 }}
               end={{ x: 1, y: 1 }}
-              style={styles.signInGradient}>
+              style={styles.signInGradient}
+            >
               <Text style={styles.signInText}>Sign In</Text>
             </LinearGradient>
           </TouchableOpacity>
