@@ -5,7 +5,6 @@ import {
   StyleSheet,
   TextInput,
   TouchableOpacity,
-  Dimensions,
   KeyboardAvoidingView,
   Platform,
   ScrollView,
@@ -13,7 +12,6 @@ import {
 import LinearGradient from 'react-native-linear-gradient';
 import Colors from '../../theme/colors';
 
-const { width } = Dimensions.get('window');
 
 interface SignUpScreenProps {
   onSignUp: (name: string, email: string) => void;
@@ -27,14 +25,13 @@ const SignUpScreen: React.FC<SignUpScreenProps> = ({
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [confirmPassword, setConfirmPassword] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
   const [acceptedTerms, setAcceptedTerms] = useState(false);
 
   const isValid =
     name.length > 0 &&
     email.length > 0 &&
     password.length >= 6 &&
-    password === confirmPassword &&
     acceptedTerms;
 
   return (
@@ -84,20 +81,15 @@ const SignUpScreen: React.FC<SignUpScreenProps> = ({
               placeholderTextColor={Colors.textSecondary}
               value={password}
               onChangeText={setPassword}
-              secureTextEntry
+              secureTextEntry={!showPassword}
             />
-          </View>
-
-          <View style={styles.inputContainer}>
-            <Text style={styles.inputIcon}>🔒</Text>
-            <TextInput
-              style={styles.input}
-              placeholder="Confirm Password"
-              placeholderTextColor={Colors.textSecondary}
-              value={confirmPassword}
-              onChangeText={setConfirmPassword}
-              secureTextEntry
-            />
+            <TouchableOpacity
+              onPress={() => setShowPassword(prev => !prev)}
+              activeOpacity={0.7}
+              style={styles.eyeButton}
+            >
+              <Text style={styles.eyeIcon}>{showPassword ? '👁️' : '🙈'}</Text>
+            </TouchableOpacity>
           </View>
 
           <TouchableOpacity
@@ -190,6 +182,13 @@ const styles = StyleSheet.create({
     flex: 1,
     fontSize: 16,
     color: Colors.textPrimary,
+  },
+  eyeButton: {
+    padding: 4,
+    marginLeft: 8,
+  },
+  eyeIcon: {
+    fontSize: 18,
   },
   checkboxRow: {
     flexDirection: 'row',

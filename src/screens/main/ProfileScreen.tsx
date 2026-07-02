@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useCallback } from 'react';
 import {
   View,
   Text,
@@ -12,6 +12,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import Svg, { Path, Circle } from 'react-native-svg';
 import LinearGradient from 'react-native-linear-gradient';
 import Colors from '../../theme/colors';
+import { useApp } from '../../context/AppContext';
 
 const BellIcon = () => (
   <Svg width={22} height={22} viewBox="0 0 24 24" fill="none">
@@ -187,7 +188,34 @@ const CycleStreakIcon = () => (
   </Svg>
 );
 
-const ProfileScreen: React.FC = () => (
+const LogoutIcon = () => (
+  <Svg width={18} height={18} viewBox="0 0 24 24" fill="none">
+    <Path
+      d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4"
+      stroke="#FF6BAA"
+      strokeWidth={1.8}
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    />
+    <Path
+      d="M16 17l5-5-5-5M21 12H9"
+      stroke="#FF6BAA"
+      strokeWidth={1.8}
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    />
+  </Svg>
+);
+
+const ProfileScreen: React.FC = () => {
+  const { dispatch } = useApp();
+
+  const handleLogout = useCallback(() => {
+    dispatch({ type: 'SET_AUTHENTICATED', payload: false });
+    dispatch({ type: 'SET_USER', payload: null });
+  }, [dispatch]);
+
+  return (
   <SafeAreaView style={styles.safeArea} edges={['top']}>
     <StatusBar barStyle="dark-content" backgroundColor={Colors.background} />
     <View style={styles.header}>
@@ -352,10 +380,22 @@ const ProfileScreen: React.FC = () => (
         <View style={styles.insightDecorCircle2} />
       </LinearGradient>
 
+      <TouchableOpacity
+        style={styles.logoutBtn}
+        activeOpacity={0.8}
+        onPress={handleLogout}
+        accessibilityLabel="Log out"
+        accessibilityRole="button"
+      >
+        <LogoutIcon />
+        <Text style={styles.logoutBtnText}>Log Out</Text>
+      </TouchableOpacity>
+
       <View style={{ height: 110 }} />
     </ScrollView>
   </SafeAreaView>
-);
+  );
+};
 
 export default ProfileScreen;
 
@@ -568,5 +608,23 @@ const styles = StyleSheet.create({
     backgroundColor: 'rgba(255,255,255,0.08)',
     bottom: -20,
     left: 20,
+  },
+  logoutBtn: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: 8,
+    marginTop: 16,
+    paddingVertical: 14,
+    borderRadius: 16,
+    borderWidth: 1.5,
+    borderColor: '#FFD6E8',
+    backgroundColor: '#FFF5F9',
+  },
+  logoutBtnText: {
+    fontSize: 15,
+    fontWeight: '700',
+    color: Colors.primaryPink,
+    letterSpacing: 0.2,
   },
 });

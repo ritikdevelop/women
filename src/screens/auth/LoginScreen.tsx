@@ -28,6 +28,7 @@ const LoginScreen: React.FC<LoginScreenProps> = ({
 }) => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
 
   return (
     <KeyboardAvoidingView
@@ -65,8 +66,15 @@ const LoginScreen: React.FC<LoginScreenProps> = ({
               placeholderTextColor={Colors.textSecondary}
               value={password}
               onChangeText={setPassword}
-              secureTextEntry
+              secureTextEntry={!showPassword}
             />
+            <TouchableOpacity
+              onPress={() => setShowPassword(prev => !prev)}
+              activeOpacity={0.7}
+              style={styles.eyeButton}
+            >
+              <Text style={styles.eyeIcon}>{showPassword ? '👁️' : '🙈'}</Text>
+            </TouchableOpacity>
           </View>
 
           <TouchableOpacity onPress={onNavigateToForgotPassword}>
@@ -161,6 +169,13 @@ const styles = StyleSheet.create({
     flex: 1,
     fontSize: 16,
     color: Colors.textPrimary,
+  },
+  eyeButton: {
+    padding: 4,
+    marginLeft: 8,
+  },
+  eyeIcon: {
+    fontSize: 18,
   },
   forgotPassword: {
     color: Colors.primaryPink,

@@ -106,7 +106,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     paddingHorizontal: 16,
     paddingTop: 8,
-    paddingBottom: 12,
+    // paddingBottom: 12,
   },
   headerTitle: {
     fontSize: 26,
@@ -188,7 +188,7 @@ const styles = StyleSheet.create({
     fontWeight: '400',
     textAlign: 'center',
   },
-  footer: { paddingHorizontal: 24, paddingBottom: 36 },
+  footer: { paddingHorizontal: 24, paddingBottom: 120 },
   chatBtn: {
     borderRadius: 28,
     paddingVertical: 16,

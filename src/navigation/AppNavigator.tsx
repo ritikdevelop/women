@@ -36,6 +36,8 @@ import ProfileScreen from '../screens/main/ProfileScreen';
 import AICoachScreen from '../screens/main/AICoachScreen';
 import WaterTrackerScreen from '../screens/Features/WaterTrackerScreen';
 import StepTrackerScreen from '../screens/Features/StepTrackerScreen';
+import FitnessDetailsScreen from '../screens/main/FitnessDetailsScreen';
+import type { WorkoutData } from '../screens/main/FitnessScreen';
 
 // ─── Param Lists ──────────────────────────────────────────────────────────────
 
@@ -66,6 +68,7 @@ export type MainStackParamList = {
   MainTabs: undefined;
   WaterTracker: undefined;
   StepTracker: undefined;
+  WorkoutDetails: { workout: WorkoutData };
 };
 
 // ─── Navigators ───────────────────────────────────────────────────────────────
@@ -206,6 +209,7 @@ const MainNavigator: React.FC = () => (
     <MainStack.Screen name="MainTabs" component={MainTabs} />
     <MainStack.Screen name="WaterTracker" component={WaterTrackerScreen} />
     <MainStack.Screen name="StepTracker" component={StepTrackerScreen} />
+    <MainStack.Screen name="WorkoutDetails" component={FitnessDetailsScreen} />
   </MainStack.Navigator>
 );
 
