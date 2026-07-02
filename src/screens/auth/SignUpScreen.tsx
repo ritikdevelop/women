@@ -40,10 +40,12 @@ const SignUpScreen: React.FC<SignUpScreenProps> = ({
   return (
     <KeyboardAvoidingView
       style={styles.container}
-      behavior={Platform.OS === 'ios' ? 'padding' : 'height'}>
+      behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+    >
       <ScrollView
         contentContainerStyle={styles.scrollContent}
-        showsVerticalScrollIndicator={false}>
+        showsVerticalScrollIndicator={false}
+      >
         <View style={styles.topSection}>
           <Text style={styles.title}>Create Account</Text>
           <Text style={styles.subtitle}>Start your wellness journey</Text>
@@ -101,12 +103,11 @@ const SignUpScreen: React.FC<SignUpScreenProps> = ({
           <TouchableOpacity
             style={styles.checkboxRow}
             onPress={() => setAcceptedTerms(!acceptedTerms)}
-            activeOpacity={0.7}>
+            activeOpacity={0.7}
+          >
             <View
-              style={[
-                styles.checkbox,
-                acceptedTerms && styles.checkboxChecked,
-              ]}>
+              style={[styles.checkbox, acceptedTerms && styles.checkboxChecked]}
+            >
               {acceptedTerms && <Text style={styles.checkmark}>✓</Text>}
             </View>
             <Text style={styles.checkboxText}>
@@ -118,16 +119,16 @@ const SignUpScreen: React.FC<SignUpScreenProps> = ({
             style={[styles.signUpButton, !isValid && styles.buttonDisabled]}
             onPress={() => isValid && onSignUp(name, email)}
             activeOpacity={0.8}
-            disabled={!isValid}>
+            disabled={!isValid}
+          >
             <LinearGradient
               colors={
-                isValid
-                  ? Colors.wellnessGradient
-                  : ['#D4D4D4', '#D4D4D4']
+                isValid ? Colors.wellnessGradient : ['#D4D4D4', '#D4D4D4']
               }
               start={{ x: 0, y: 0 }}
               end={{ x: 1, y: 1 }}
-              style={styles.signUpGradient}>
+              style={styles.signUpGradient}
+            >
               <Text style={styles.signUpText}>Create Account</Text>
             </LinearGradient>
           </TouchableOpacity>
