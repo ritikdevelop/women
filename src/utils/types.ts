@@ -21,8 +21,8 @@ export type OnboardingStackParamList = {
   FitnessGoals: { selectedGoals?: string[] };
   WellnessPreferences: { selectedGoals?: string[] };
   PeriodSetup: { preferences?: string[] };
-  WaterGoal: { periodData?: any };
-  MeetMaya: { waterGoal?: number };
+  WaterGoal: { periodData?: PeriodData };
+  AIWellnessCoach: { waterGoal?: number };
 };
 
 export type AuthStackParamList = {
@@ -35,6 +35,7 @@ export type MainTabParamList = {
   Home: undefined;
   Fitness: undefined;
   Calendar: undefined;
+  AICoach: undefined;
   Profile: undefined;
 };
 

@@ -35,12 +35,14 @@ const ForgotPasswordScreen: React.FC<ForgotPasswordScreenProps> = ({
           <TouchableOpacity
             style={styles.backButton}
             onPress={onBack}
-            activeOpacity={0.8}>
+            activeOpacity={0.8}
+          >
             <LinearGradient
               colors={Colors.wellnessGradient}
               start={{ x: 0, y: 0 }}
               end={{ x: 1, y: 1 }}
-              style={styles.backGradient}>
+              style={styles.backGradient}
+            >
               <Text style={styles.backText}>Back to Sign In</Text>
             </LinearGradient>
           </TouchableOpacity>
@@ -72,10 +74,14 @@ const ForgotPasswordScreen: React.FC<ForgotPasswordScreenProps> = ({
         </View>
 
         <TouchableOpacity
-          style={[styles.sendButton, email.length === 0 && styles.buttonDisabled]}
+          style={[
+            styles.sendButton,
+            email.length === 0 && styles.buttonDisabled,
+          ]}
           onPress={() => email.length > 0 && setSent(true)}
           activeOpacity={0.8}
-          disabled={email.length === 0}>
+          disabled={email.length === 0}
+        >
           <LinearGradient
             colors={
               email.length > 0
@@ -84,7 +90,8 @@ const ForgotPasswordScreen: React.FC<ForgotPasswordScreenProps> = ({
             }
             start={{ x: 0, y: 0 }}
             end={{ x: 1, y: 1 }}
-            style={styles.sendGradient}>
+            style={styles.sendGradient}
+          >
             <Text style={styles.sendText}>Send Reset Link</Text>
           </LinearGradient>
         </TouchableOpacity>

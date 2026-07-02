@@ -22,20 +22,21 @@ import Animated, {
   withSpring,
   Easing,
 } from 'react-native-reanimated';
+import { useNavigation } from '@react-navigation/native';
+import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import Colors from '../../theme/colors';
+import type { MainStackParamList } from '../../navigation/AppNavigator';
+import { useApp } from '../../context/AppContext';
 
 const AnimatedCircle = Animated.createAnimatedComponent(Circle);
 
-// ─── Animation constants (from key notes: 300–500ms, subtle) ─────────────────
 const DURATION = 400;
 const SPRING_CONFIG = { damping: 12, stiffness: 180 };
-
-// ─── Circular Progress Component (animated from 0 → progress) ────────────────
 
 interface CircularProgressProps {
   size: number;
   strokeWidth: number;
-  progress: number; // 0–1
+  progress: number;
   color: string;
   bgColor?: string;
   children?: React.ReactNode;
@@ -55,8 +56,6 @@ const CircularProgress: React.FC<CircularProgressProps> = ({
   const cx = size / 2;
   const cy = size / 2;
   const circumference = 2 * Math.PI * r;
-
-  // Animation 3 & 5 & 6: progress rings animate from 0 → value on mount
   const animatedProgress = useSharedValue(0);
 
   useEffect(() => {
@@ -64,7 +63,8 @@ const CircularProgress: React.FC<CircularProgressProps> = ({
       delay,
       withTiming(progress, { duration: 900, easing: Easing.out(Easing.cubic) }),
     );
-  }, [progress, delay]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [progress, delay, animatedProgress]);
 
   const animatedCircleProps = useAnimatedProps(() => ({
     strokeDashoffset: circumference * (1 - animatedProgress.value),
@@ -97,8 +97,7 @@ const CircularProgress: React.FC<CircularProgressProps> = ({
           fill="none"
           strokeDasharray={circumference}
           strokeLinecap="round"
-          rotation={-90}
-          origin={`${cx}, ${cy}`}
+          transform={`rotate(-90, ${cx}, ${cy})`}
           animatedProps={animatedCircleProps}
         />
       </Svg>
@@ -107,18 +106,14 @@ const CircularProgress: React.FC<CircularProgressProps> = ({
   );
 };
 
-// ─── Dotted Half-Moon Arc (Animation 4 — static, half-circle style) ──────────
-
 const DottedArc: React.FC = () => {
   const dots = 10;
   const r = 30;
   const cx = 36;
   const cy = 36;
-  // Vertical half-moon: spans 180° on the right side (from top → right → bottom, i.e. -90° to 90°)
   const startAngle = -90;
   const totalAngle = 180;
-  const activeCount = 7; // ~60% filled
-
+  const activeCount = 7;
   return (
     <Svg width={72} height={72}>
       {Array.from({ length: dots }).map((_, i) => {
@@ -126,8 +121,6 @@ const DottedArc: React.FC = () => {
         const rad = (angle * Math.PI) / 180;
         const x = cx + r * Math.cos(rad);
         const y = cy + r * Math.sin(rad);
-        const isActive = i < activeCount;
-        // Make the last active dot slightly larger as a marker
         const dotR = i === activeCount - 1 ? 5 : 3.5;
         return (
           <Circle
@@ -135,15 +128,13 @@ const DottedArc: React.FC = () => {
             cx={x}
             cy={y}
             r={dotR}
-            fill={isActive ? Colors.primaryPink : '#F0D0DC'}
+            fill={i < activeCount ? Colors.primaryPink : '#F0D0DC'}
           />
         );
       })}
     </Svg>
   );
 };
-
-// ─── Bell Icon ────────────────────────────────────────────────────────────────
 
 const BellIcon = () => (
   <View style={styles.bellWrapper}>
@@ -167,8 +158,6 @@ const BellIcon = () => (
   </View>
 );
 
-// ─── Mood Emoji Data ──────────────────────────────────────────────────────────
-
 const MOODS = [
   { emoji: '😄', label: 'Happy' },
   { emoji: '😊', label: 'Good' },
@@ -177,21 +166,19 @@ const MOODS = [
   { emoji: '😔', label: 'Sad' },
 ];
 
-// ─── Animated Mood Button (Animation 7: bounce scale on select) ───────────────
-
 interface MoodButtonProps {
   emoji: string;
+  mood: string;
   isSelected: boolean;
   onPress: () => void;
 }
-
 const MoodButton: React.FC<MoodButtonProps> = ({
   emoji,
+  mood,
   isSelected,
   onPress,
 }) => {
   const scale = useSharedValue(1);
-
   const handlePress = () => {
     scale.value = withSequence(
       withSpring(1.25, { damping: 6, stiffness: 300 }),
@@ -199,16 +186,17 @@ const MoodButton: React.FC<MoodButtonProps> = ({
     );
     onPress();
   };
-
   const animStyle = useAnimatedStyle(() => ({
     transform: [{ scale: scale.value }],
   }));
-
   return (
     <TouchableOpacity
       onPress={handlePress}
       style={[styles.moodButton, isSelected && styles.moodButtonActive]}
       activeOpacity={0.8}
+      accessibilityLabel={`${mood} mood`}
+      accessibilityRole="button"
+      accessibilityHint="Double tap to track mood"
     >
       <Animated.View style={animStyle}>
         <Text style={styles.moodEmoji}>{emoji}</Text>
@@ -217,50 +205,39 @@ const MoodButton: React.FC<MoodButtonProps> = ({
   );
 };
 
-// ─── Animated Steps Counter (Animation 5: count up 0 → 7834) ─────────────────
-
 const AnimatedStepsCounter: React.FC = () => {
   const [displayed, setDisplayed] = useState(0);
   const target = 7834;
-
   useEffect(() => {
     let start: number | null = null;
     const duration = 1000;
     const step = (timestamp: number) => {
       if (!start) start = timestamp;
-      const elapsed = timestamp - start;
-      const fraction = Math.min(elapsed / duration, 1);
-      // Ease-out cubic
+      const fraction = Math.min((timestamp - start) / duration, 1);
       const eased = 1 - Math.pow(1 - fraction, 3);
       setDisplayed(Math.round(eased * target));
       if (fraction < 1) requestAnimationFrame(step);
     };
-    // Delay slightly so screen has mounted
     const timer = setTimeout(() => requestAnimationFrame(step), 300);
     return () => clearTimeout(timer);
   }, []);
-
   return <Text style={styles.stepsValue}>{displayed.toLocaleString()}</Text>;
 };
 
-// ─── HomeScreen ───────────────────────────────────────────────────────────────
-
 const HomeScreen: React.FC = () => {
   const [selectedMood, setSelectedMood] = useState<number>(0);
+  const navigation =
+    useNavigation<NativeStackNavigationProp<MainStackParamList>>();
+  const { state } = useApp();
+  const userName = state.user?.name ?? 'there';
 
-  // ── Animation 1: Greeting — fade + slide up ──────────────────────────────
   const greetingOpacity = useSharedValue(0);
   const greetingTranslateY = useSharedValue(18);
-
-  // ── Animation 2: Cycle Card — gradient shimmer pulse ─────────────────────
   const cycleCardScale = useSharedValue(0.96);
   const cycleCardOpacity = useSharedValue(0);
-
-  // ── Animation 6: Flame icon pulse ────────────────────────────────────────
   const flamePulse = useSharedValue(1);
 
   useEffect(() => {
-    // 1. Greeting fade + slide up
     greetingOpacity.value = withDelay(
       100,
       withTiming(1, { duration: DURATION, easing: Easing.out(Easing.quad) }),
@@ -269,15 +246,11 @@ const HomeScreen: React.FC = () => {
       100,
       withTiming(0, { duration: DURATION, easing: Easing.out(Easing.quad) }),
     );
-
-    // 2. Cycle card entrance
     cycleCardOpacity.value = withDelay(
       200,
       withTiming(1, { duration: 450, easing: Easing.out(Easing.quad) }),
     );
     cycleCardScale.value = withDelay(200, withSpring(1, SPRING_CONFIG));
-
-    // 6. Flame gentle pulse (repeating)
     flamePulse.value = withDelay(
       600,
       withRepeat(
@@ -291,17 +264,14 @@ const HomeScreen: React.FC = () => {
     );
   }, []);
 
-  // ── Animated styles ───────────────────────────────────────────────────────
   const greetingStyle = useAnimatedStyle(() => ({
     opacity: greetingOpacity.value,
     transform: [{ translateY: greetingTranslateY.value }],
   }));
-
   const cycleCardStyle = useAnimatedStyle(() => ({
     opacity: cycleCardOpacity.value,
     transform: [{ scale: cycleCardScale.value }],
   }));
-
   const flameStyle = useAnimatedStyle(() => ({
     transform: [{ scale: flamePulse.value }],
   }));
@@ -314,11 +284,10 @@ const HomeScreen: React.FC = () => {
         contentContainerStyle={styles.scrollContent}
         showsVerticalScrollIndicator={false}
       >
-        {/* ── Header — Animation 1: fade + slide up ───────────────────────── */}
         <View style={styles.header}>
           <Animated.View style={greetingStyle}>
             <View style={styles.greetingRow}>
-              <Text style={styles.greetingText}>Good Morning, Sarah </Text>
+              <Text style={styles.greetingText}>Good Morning, {userName} </Text>
               <Text style={styles.greetingEmoji}>🌸</Text>
             </View>
             <Text style={styles.dateText}>Monday, 20 May</Text>
@@ -326,49 +295,34 @@ const HomeScreen: React.FC = () => {
           <BellIcon />
         </View>
 
-        {/* ── Cycle Banner — Animation 2: entrance scale + opacity ────────── */}
-        
-          <Animated.View style={[cycleCardStyle, styles.cycleBannerOuter]}>
-            <LinearGradient
-              colors={['#EE4D85', '#F87CAD', '#FBAECC', '#FBAECC']}
-              start={{ x: 0, y: 0 }}
-              end={{ x: 1, y: 0.5 }}
-              style={styles.cycleBanner}
-            >
-              {/* Soft peach/cream blob — top-right background decoration */}
-              <View style={styles.cyclePeachBlob} />
-
-              {/* ── Top row: Cycle Day | divider | Ovulation in ── */}
-              <View style={styles.cycleTopRow}>
-                {/* Left stat */}
-                <View style={styles.cycleStatBlock}>
-                  <Text style={styles.cycleStatLabel}>Cycle Day</Text>
-                  <Text style={styles.cycleStatNumber}>12</Text>
-                </View>
-
-                {/* Vertical divider */}
-                <View style={styles.cycleDivider} />
-
-                {/* Right stat */}
-                <View style={styles.cycleStatBlock}>
-                  <Text style={styles.cycleStatLabel}>Ovulation in</Text>
-                  <Text style={styles.cycleStatNumber}>2 Days</Text>
-                </View>
+        <Animated.View style={[cycleCardStyle, styles.cycleBannerOuter]}>
+          <LinearGradient
+            colors={['#EE4D85', '#F87CAD', '#FBAECC', '#FBAECC']}
+            start={{ x: 0, y: 0 }}
+            end={{ x: 1, y: 0.5 }}
+            style={styles.cycleBanner}
+          >
+            <View style={styles.cyclePeachBlob} />
+            <View style={styles.cycleTopRow}>
+              <View style={styles.cycleStatBlock}>
+                <Text style={styles.cycleStatLabel}>Cycle Day</Text>
+                <Text style={styles.cycleStatNumber}>12</Text>
               </View>
-
-              {/* ── Bottom row: fertile window text + arrow ── */}
-              <View style={styles.cycleBottomRow}>
-                <Text style={styles.cycleSubtext} numberOfLines={1}>
-                  You're in your fertile window
-                </Text>
+              <View style={styles.cycleDivider} />
+              <View style={styles.cycleStatBlock}>
+                <Text style={styles.cycleStatLabel}>Ovulation in</Text>
+                <Text style={styles.cycleStatNumber}>2 Days</Text>
               </View>
-            </LinearGradient>
-          </Animated.View>
+            </View>
+            <View style={styles.cycleBottomRow}>
+              <Text style={styles.cycleSubtext} numberOfLines={1}>
+                You're in your fertile window
+              </Text>
+            </View>
+          </LinearGradient>
+        </Animated.View>
 
-
-        {/* ── Stats Row 1: Period (Anim 4: dotted rotation) + Water (Anim 3) ── */}
         <View style={styles.statsRow}>
-          {/* Period Card */}
           <View style={[styles.card, styles.halfCard]}>
             <Text style={styles.cardTitlePink}>Period</Text>
             <Text style={styles.cardSubtitle}>Next Period in</Text>
@@ -377,9 +331,13 @@ const HomeScreen: React.FC = () => {
               <DottedArc />
             </View>
           </View>
-
-          {/* Water Card — Animation 3: ring animates from 0 → 60% */}
-          <View style={[styles.card, styles.halfCard]}>
+          <TouchableOpacity
+            style={[styles.card, styles.halfCard]}
+            activeOpacity={0.85}
+            onPress={() => navigation.navigate('WaterTracker')}
+            accessibilityLabel="Water tracker, 60% of goal"
+            accessibilityRole="button"
+          >
             <Text style={styles.cardTitleBlue}>Water</Text>
             <View style={styles.waterRow}>
               <View>
@@ -398,13 +356,17 @@ const HomeScreen: React.FC = () => {
                 <Text style={styles.progressLabel}>60%</Text>
               </CircularProgress>
             </View>
-          </View>
+          </TouchableOpacity>
         </View>
 
-        {/* ── Stats Row 2: Steps (Anim 5) + Workout (Anim 6: flame pulse) ─── */}
         <View style={styles.statsRow}>
-          {/* Steps Card — Animation 5: count up + ring */}
-          <View style={[styles.card, styles.halfCard]}>
+          <TouchableOpacity
+            style={[styles.card, styles.halfCard]}
+            activeOpacity={0.85}
+            onPress={() => navigation.navigate('StepTracker')}
+            accessibilityLabel="Step tracker"
+            accessibilityRole="button"
+          >
             <Text style={styles.cardTitleGray}>Steps</Text>
             <View style={styles.stepsRow}>
               <View>
@@ -422,9 +384,7 @@ const HomeScreen: React.FC = () => {
                 <Text style={styles.stepsEmoji}>👟</Text>
               </CircularProgress>
             </View>
-          </View>
-
-          {/* Workout Card — Animation 6: flame pulses, ring animates */}
+          </TouchableOpacity>
           <View style={[styles.card, styles.halfCard]}>
             <Text style={styles.cardTitleGray}>Workout</Text>
             <Text style={styles.cardSubtitle}>Today's Progress</Text>
@@ -446,7 +406,6 @@ const HomeScreen: React.FC = () => {
           </View>
         </View>
 
-        {/* ── Mood Section — Animation 7: bounce scale on select ──────────── */}
         <View style={[styles.card, styles.fullCard]}>
           <View style={styles.moodHeader}>
             <View>
@@ -460,6 +419,7 @@ const HomeScreen: React.FC = () => {
               <MoodButton
                 key={index}
                 emoji={mood.emoji}
+                mood={mood.label}
                 isSelected={selectedMood === index}
                 onPress={() => setSelectedMood(index)}
               />
@@ -467,7 +427,6 @@ const HomeScreen: React.FC = () => {
           </View>
         </View>
 
-        {/* ── Maya's Insight ───────────────────────────────────────────────── */}
         <View style={[styles.card, styles.fullCard, styles.insightCard]}>
           <View style={styles.insightContent}>
             <View style={styles.insightLeft}>
@@ -485,7 +444,6 @@ const HomeScreen: React.FC = () => {
           </View>
         </View>
 
-        {/* ── Daily Motivation ─────────────────────────────────────────────── */}
         <View style={[styles.card, styles.fullCard, styles.motivationCard]}>
           <View style={styles.motivationContent}>
             <View style={styles.motivationLeft}>
@@ -498,8 +456,12 @@ const HomeScreen: React.FC = () => {
           </View>
         </View>
 
-        {/* ── Wellness Streak ──────────────────────────────────────────────── */}
-        <TouchableOpacity style={styles.streakRow} activeOpacity={0.8}>
+        <TouchableOpacity
+          style={styles.streakRow}
+          activeOpacity={0.8}
+          accessibilityLabel="12 Day Wellness Streak"
+          accessibilityRole="button"
+        >
           <View style={styles.streakLeft}>
             <Text style={styles.streakFire}>🔥</Text>
             <Text style={styles.streakText}>12 Day Wellness Streak</Text>
@@ -513,21 +475,10 @@ const HomeScreen: React.FC = () => {
 
 export default HomeScreen;
 
-// ─── Styles ───────────────────────────────────────────────────────────────────
 const styles = StyleSheet.create({
-  safeArea: {
-    flex: 1,
-    backgroundColor: Colors.background,
-  },
-  scroll: {
-    flex: 1,
-  },
-  scrollContent: {
-    paddingHorizontal: 16,
-    paddingBottom: 110,
-  },
-
-  // ── Header ──────────────────────────────────────────────────────────────────
+  safeArea: { flex: 1, backgroundColor: Colors.background },
+  scroll: { flex: 1 },
+  scrollContent: { paddingHorizontal: 16, paddingBottom: 110 },
   header: {
     flexDirection: 'row',
     justifyContent: 'space-between',
@@ -535,19 +486,14 @@ const styles = StyleSheet.create({
     paddingTop: 8,
     paddingBottom: 16,
   },
-  greetingRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-  },
+  greetingRow: { flexDirection: 'row', alignItems: 'center' },
   greetingText: {
     fontSize: 18,
     fontWeight: '700',
     color: Colors.textPrimary,
     letterSpacing: -0.3,
   },
-  greetingEmoji: {
-    fontSize: 20,
-  },
+  greetingEmoji: { fontSize: 20 },
   dateText: {
     fontSize: 13,
     color: Colors.textSecondary,
@@ -579,22 +525,7 @@ const styles = StyleSheet.create({
     borderWidth: 1.5,
     borderColor: '#FFF',
   },
-
-  // ── Cycle Banner ────────────────────────────────────────────────────────────
-  // Outer wrapper — overflow visible so avatar can peek above
-  cycleBannerOuter: {
-    marginBottom: 12,
-    marginTop: 5,        // room for the avatar that floats above
-  },
-  // Avatar peeks above and to the right of the card
-  cycleAvatarFloat: {
-    position: 'absolute',
-    top: -42,
-    right: 12,
-    width: 90,
-    height: 100,
-    zIndex: 10,
-  },
+  cycleBannerOuter: { marginBottom: 12, marginTop: 5 },
   cycleBanner: {
     borderRadius: 22,
     paddingHorizontal: 18,
@@ -603,7 +534,6 @@ const styles = StyleSheet.create({
     overflow: 'hidden',
     minHeight: 120,
   },
-  // Soft peach blob in the top-right background
   cyclePeachBlob: {
     position: 'absolute',
     width: 180,
@@ -613,15 +543,8 @@ const styles = StyleSheet.create({
     top: -60,
     right: -30,
   },
-  // Top row holding the two stat columns
-  cycleTopRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    marginBottom: 16,
-  },
-  cycleStatBlock: {
-    flex: 1,
-  },
+  cycleTopRow: { flexDirection: 'row', alignItems: 'center', marginBottom: 16 },
+  cycleStatBlock: { flex: 1 },
   cycleStatLabel: {
     fontSize: 12,
     color: 'rgba(255,255,255,0.88)',
@@ -635,18 +558,16 @@ const styles = StyleSheet.create({
     letterSpacing: -1,
     lineHeight: 44,
   },
-  // Thin white vertical divider
   cycleDivider: {
     width: 1.2,
     height: 56,
     backgroundColor: 'rgba(255,255,255,0.45)',
     marginHorizontal: 18,
   },
-  // Bottom row: fertile window text + arrow
   cycleBottomRow: {
     flexDirection: 'row',
     alignItems: 'center',
-    paddingRight: 76,     // leave space so text doesn't overlap the flower circle
+    paddingRight: 76,
   },
   cycleSubtext: {
     flex: 1,
@@ -654,38 +575,7 @@ const styles = StyleSheet.create({
     color: 'rgba(255,255,255,0.95)',
     fontWeight: '500',
   },
-  cycleArrow: {
-    fontSize: 13,
-    color: 'rgba(255,255,255,0.95)',
-    fontWeight: '600',
-  },
-  // Flower circle — absolute bottom-right
-  flowerCircle: {
-    position: 'absolute',
-    right: 16,
-    bottom: 14,
-    width: 60,
-    height: 60,
-    borderRadius: 30,
-    backgroundColor: 'rgba(255,255,255,0.88)',
-    alignItems: 'center',
-    justifyContent: 'center',
-    shadowColor: '#FF6BAA',
-    shadowOffset: { width: 0, height: 3 },
-    shadowOpacity: 0.2,
-    shadowRadius: 8,
-    elevation: 5,
-  },
-  flowerEmoji: {
-    fontSize: 30,
-  },
-
-  // ── Stats Grid ───────────────────────────────────────────────────────────────
-  statsRow: {
-    flexDirection: 'row',
-    gap: 12,
-    marginBottom: 12,
-  },
+  statsRow: { flexDirection: 'row', gap: 12, marginBottom: 12 },
   card: {
     backgroundColor: '#FFFFFF',
     borderRadius: 18,
@@ -696,14 +586,8 @@ const styles = StyleSheet.create({
     shadowRadius: 8,
     elevation: 3,
   },
-  halfCard: {
-    flex: 1,
-  },
-  fullCard: {
-    marginBottom: 12,
-  },
-
-  //  Card Labels 
+  halfCard: { flex: 1 },
+  fullCard: { marginBottom: 12 },
   cardTitlePink: {
     fontSize: 13,
     fontWeight: '700',
@@ -727,11 +611,7 @@ const styles = StyleSheet.create({
     fontWeight: '700',
     color: Colors.textPrimary,
   },
-  cardSubtitle: {
-    fontSize: 11,
-    color: Colors.textSecondary,
-    marginBottom: 4,
-  },
+  cardSubtitle: { fontSize: 11, color: Colors.textSecondary, marginBottom: 4 },
   cardValueLarge: {
     fontSize: 20,
     fontWeight: '800',
@@ -739,15 +619,7 @@ const styles = StyleSheet.create({
     letterSpacing: -0.5,
     marginTop: 4,
   },
-
-  // ── Dotted Arc ───────────────────────────────────────────────────────────────
-  dottedArcContainer: {
-    position: 'absolute',
-    right: 6,
-    bottom: 10,
-  },
-
-  // ── Water Card ──────────────────────────────────────────────────────────────
+  dottedArcContainer: { position: 'absolute', right: 6, bottom: 10 },
   waterRow: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -760,22 +632,9 @@ const styles = StyleSheet.create({
     color: Colors.textPrimary,
     lineHeight: 30,
   },
-  waterGoal: {
-    fontSize: 12,
-    color: Colors.textSecondary,
-    fontWeight: '500',
-  },
-  waterDropEmoji: {
-    fontSize: 16,
-    marginTop: 4,
-  },
-  progressLabel: {
-    fontSize: 12,
-    fontWeight: '700',
-    color: '#4FC3F7',
-  },
-
-  // ── Steps Card ──────────────────────────────────────────────────────────────
+  waterGoal: { fontSize: 12, color: Colors.textSecondary, fontWeight: '500' },
+  waterDropEmoji: { fontSize: 16, marginTop: 4 },
+  progressLabel: { fontSize: 12, fontWeight: '700', color: '#4FC3F7' },
   stepsRow: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -788,16 +647,8 @@ const styles = StyleSheet.create({
     color: Colors.textPrimary,
     lineHeight: 28,
   },
-  stepsGoal: {
-    fontSize: 11,
-    color: Colors.textSecondary,
-    fontWeight: '500',
-  },
-  stepsEmoji: {
-    fontSize: 20,
-  },
-
-  // ── Workout Card ─────────────────────────────────────────────────────────────
+  stepsGoal: { fontSize: 11, color: Colors.textSecondary, fontWeight: '500' },
+  stepsEmoji: { fontSize: 20 },
   workoutRow: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -810,26 +661,15 @@ const styles = StyleSheet.create({
     color: Colors.textPrimary,
     letterSpacing: -0.5,
   },
-  fireEmoji: {
-    fontSize: 20,
-  },
-
-  // ── Mood ─────────────────────────────────────────────────────────────────────
+  fireEmoji: { fontSize: 20 },
   moodHeader: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'flex-start',
     marginBottom: 12,
   },
-  moodLambda: {
-    fontSize: 18,
-    color: Colors.textSecondary,
-    fontWeight: '400',
-  },
-  moodRow: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-  },
+  moodLambda: { fontSize: 18, color: Colors.textSecondary, fontWeight: '400' },
+  moodRow: { flexDirection: 'row', justifyContent: 'space-between' },
   moodButton: {
     width: 50,
     height: 50,
@@ -846,42 +686,22 @@ const styles = StyleSheet.create({
     shadowRadius: 6,
     elevation: 5,
   },
-  moodEmoji: {
-    fontSize: 26,
-  },
-
-  // ── Maya's Insight ───────────────────────────────────────────────────────────
+  moodEmoji: { fontSize: 26 },
   insightCard: {
     backgroundColor: '#FFF0F6',
     borderWidth: 1,
     borderColor: '#FFD6E8',
   },
-  insightContent: {
-    flexDirection: 'row',
-    alignItems: 'center',
-  },
-  insightLeft: {
-    flex: 1,
-    paddingRight: 8,
-  },
+  insightContent: { flexDirection: 'row', alignItems: 'center' },
+  insightLeft: { flex: 1, paddingRight: 8 },
   insightTitle: {
     fontSize: 14,
     fontWeight: '700',
     color: Colors.primaryPink,
     marginBottom: 6,
   },
-  insightText: {
-    fontSize: 13,
-    color: Colors.textSecondary,
-    lineHeight: 19,
-  },
-  insightAvatar: {
-    width: 70,
-    height: 70,
-    borderRadius: 35,
-  },
-
-  // ── Daily Motivation ─────────────────────────────────────────────────────────
+  insightText: { fontSize: 13, color: Colors.textSecondary, lineHeight: 19 },
+  insightAvatar: { width: 70, height: 70, borderRadius: 35 },
   motivationCard: {
     backgroundColor: '#FFF5F9',
     borderWidth: 1,
@@ -892,26 +712,15 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'space-between',
   },
-  motivationLeft: {
-    flex: 1,
-  },
+  motivationLeft: { flex: 1 },
   motivationTitle: {
     fontSize: 14,
     fontWeight: '700',
     color: Colors.primaryPink,
     marginBottom: 4,
   },
-  motivationText: {
-    fontSize: 13,
-    color: Colors.textSecondary,
-    lineHeight: 19,
-  },
-  motivationFlower: {
-    fontSize: 48,
-    opacity: 0.7,
-  },
-
-  // ── Wellness Streak ──────────────────────────────────────────────────────────
+  motivationText: { fontSize: 13, color: Colors.textSecondary, lineHeight: 19 },
+  motivationFlower: { fontSize: 48, opacity: 0.7 },
   streakRow: {
     backgroundColor: '#FFFFFF',
     borderRadius: 18,
@@ -927,22 +736,8 @@ const styles = StyleSheet.create({
     elevation: 3,
     marginBottom: 8,
   },
-  streakLeft: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 10,
-  },
-  streakFire: {
-    fontSize: 22,
-  },
-  streakText: {
-    fontSize: 15,
-    fontWeight: '700',
-    color: Colors.textPrimary,
-  },
-  streakArrow: {
-    fontSize: 22,
-    color: Colors.textSecondary,
-    fontWeight: '300',
-  },
+  streakLeft: { flexDirection: 'row', alignItems: 'center', gap: 10 },
+  streakFire: { fontSize: 22 },
+  streakText: { fontSize: 15, fontWeight: '700', color: Colors.textPrimary },
+  streakArrow: { fontSize: 22, color: Colors.textSecondary, fontWeight: '300' },
 });

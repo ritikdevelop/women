@@ -30,7 +30,9 @@ const WaterGoalScreen: React.FC<WaterGoalScreenProps> = ({
       <View style={styles.content}>
         <Text style={styles.emoji}>💧</Text>
         <Text style={styles.title}>Daily Water Goal</Text>
-        <Text style={styles.subtitle}>How much water will you drink daily?</Text>
+        <Text style={styles.subtitle}>
+          How much water will you drink daily?
+        </Text>
 
         {/* Animated Water Bottle */}
         <View style={styles.bottleWrapper}>
@@ -50,17 +52,19 @@ const WaterGoalScreen: React.FC<WaterGoalScreenProps> = ({
 
         {/* Goal Selector */}
         <View style={styles.sliderContainer}>
-          {options.map((opt) => (
+          {options.map(opt => (
             <TouchableOpacity
               key={opt}
               style={[styles.option, goal === opt && styles.optionSelected]}
               onPress={() => setGoal(opt)}
-              activeOpacity={0.7}>
+              activeOpacity={0.7}
+            >
               <Text
                 style={[
                   styles.optionText,
                   goal === opt && styles.optionTextSelected,
-                ]}>
+                ]}
+              >
                 {opt / 1000}L
               </Text>
             </TouchableOpacity>
@@ -70,7 +74,7 @@ const WaterGoalScreen: React.FC<WaterGoalScreenProps> = ({
 
       <View style={styles.bottomSection}>
         <View style={styles.pagination}>
-          {[0, 1, 2, 3, 4, 5].map((i) => (
+          {[0, 1, 2, 3, 4, 5].map(i => (
             <View
               key={i}
               style={[
@@ -84,12 +88,14 @@ const WaterGoalScreen: React.FC<WaterGoalScreenProps> = ({
         <TouchableOpacity
           style={styles.button}
           onPress={() => onNext(goal)}
-          activeOpacity={0.8}>
+          activeOpacity={0.8}
+        >
           <LinearGradient
             colors={Colors.wellnessGradient}
             start={{ x: 0, y: 0 }}
             end={{ x: 1, y: 1 }}
-            style={styles.buttonGradient}>
+            style={styles.buttonGradient}
+          >
             <Text style={styles.buttonText}>Continue</Text>
           </LinearGradient>
         </TouchableOpacity>

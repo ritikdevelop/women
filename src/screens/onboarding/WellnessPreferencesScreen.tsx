@@ -32,10 +32,8 @@ const WellnessPreferencesScreen: React.FC<WellnessPreferencesScreenProps> = ({
   const [selected, setSelected] = useState<string[]>(initial);
 
   const togglePref = (id: string) => {
-    setSelected((prev) =>
-      prev.includes(id)
-        ? prev.filter((p) => p !== id)
-        : [...prev, id],
+    setSelected(prev =>
+      prev.includes(id) ? prev.filter(p => p !== id) : [...prev, id],
     );
   };
 
@@ -47,16 +45,22 @@ const WellnessPreferencesScreen: React.FC<WellnessPreferencesScreenProps> = ({
         <Text style={styles.subtitle}>Choose what matters to you</Text>
 
         <View style={styles.grid}>
-          {PREFERENCES.map((pref) => {
+          {PREFERENCES.map(pref => {
             const isSelected = selected.includes(pref.id);
             return (
               <TouchableOpacity
                 key={pref.id}
                 style={[styles.card, isSelected && styles.cardSelected]}
                 onPress={() => togglePref(pref.id)}
-                activeOpacity={0.7}>
+                activeOpacity={0.7}
+              >
                 <Text style={styles.cardEmoji}>{pref.emoji}</Text>
-                <Text style={[styles.cardTitle, isSelected && styles.cardTitleSelected]}>
+                <Text
+                  style={[
+                    styles.cardTitle,
+                    isSelected && styles.cardTitleSelected,
+                  ]}
+                >
                   {pref.title}
                 </Text>
                 {isSelected && <View style={styles.selectedRing} />}
@@ -68,7 +72,7 @@ const WellnessPreferencesScreen: React.FC<WellnessPreferencesScreenProps> = ({
 
       <View style={styles.bottomSection}>
         <View style={styles.pagination}>
-          {[0, 1, 2, 3, 4, 5].map((i) => (
+          {[0, 1, 2, 3, 4, 5].map(i => (
             <View
               key={i}
               style={[
@@ -80,15 +84,24 @@ const WellnessPreferencesScreen: React.FC<WellnessPreferencesScreenProps> = ({
         </View>
 
         <TouchableOpacity
-          style={[styles.button, selected.length === 0 && styles.buttonDisabled]}
+          style={[
+            styles.button,
+            selected.length === 0 && styles.buttonDisabled,
+          ]}
           onPress={() => selected.length > 0 && onNext(selected)}
           activeOpacity={0.8}
-          disabled={selected.length === 0}>
+          disabled={selected.length === 0}
+        >
           <LinearGradient
-            colors={selected.length > 0 ? Colors.wellnessGradient : ['#D4D4D4', '#D4D4D4']}
+            colors={
+              selected.length > 0
+                ? Colors.wellnessGradient
+                : ['#D4D4D4', '#D4D4D4']
+            }
             start={{ x: 0, y: 0 }}
             end={{ x: 1, y: 1 }}
-            style={styles.buttonGradient}>
+            style={styles.buttonGradient}
+          >
             <Text style={styles.buttonText}>Continue</Text>
           </LinearGradient>
         </TouchableOpacity>

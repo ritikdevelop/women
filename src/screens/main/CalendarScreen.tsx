@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   View,
   Text,
@@ -6,7 +6,6 @@ import {
   ScrollView,
   TouchableOpacity,
   StatusBar,
-  Animated,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import Svg, {
@@ -17,20 +16,28 @@ import Svg, {
   LinearGradient as SvgLinearGradient,
   Stop,
 } from 'react-native-svg';
+import Animated, {
+  useSharedValue,
+  useAnimatedStyle,
+  withTiming,
+  withDelay,
+} from 'react-native-reanimated';
 import Colors from '../../theme/colors';
 
-// ─── Types ────────────────────────────────────────────────────────────────────
-
-type DayMark = 'period' | 'fertility' | 'ovulation' | 'pms' | 'selfcare' | 'today' | null;
-
+type DayMark =
+  | 'period'
+  | 'fertility'
+  | 'ovulation'
+  | 'pms'
+  | 'selfcare'
+  | 'today'
+  | null;
 interface DayData {
   day: number | null;
   mark: DayMark;
   isToday?: boolean;
   isOutside?: boolean;
 }
-
-// ─── Calendar Icon ────────────────────────────────────────────────────────────
 
 const CalendarIconSvg = () => (
   <Svg width={22} height={22} viewBox="0 0 24 24" fill="none">
@@ -54,8 +61,6 @@ const CalendarIconSvg = () => (
   </Svg>
 );
 
-// ─── Period Tracker Icons ─────────────────────────────────────────────────────
-
 const SymptomsIcon = () => (
   <Svg width={22} height={22} viewBox="0 0 24 24" fill="none">
     <Path
@@ -67,7 +72,14 @@ const SymptomsIcon = () => (
 
 const MoodIcon = () => (
   <Svg width={22} height={22} viewBox="0 0 24 24" fill="none">
-    <Circle cx="12" cy="12" r="10" stroke={Colors.primaryPink} strokeWidth={1.8} fill="none" />
+    <Circle
+      cx="12"
+      cy="12"
+      r="10"
+      stroke={Colors.primaryPink}
+      strokeWidth={1.8}
+      fill="none"
+    />
     <Path
       d="M8 14s1.5 2 4 2 4-2 4-2"
       stroke={Colors.primaryPink}
@@ -105,11 +117,14 @@ const NotesIcon = () => (
       strokeWidth={1.8}
       strokeLinecap="round"
     />
-    <Path d="M9 12h6M9 16h4" stroke={Colors.primaryPink} strokeWidth={1.8} strokeLinecap="round" />
+    <Path
+      d="M9 12h6M9 16h4"
+      stroke={Colors.primaryPink}
+      strokeWidth={1.8}
+      strokeLinecap="round"
+    />
   </Svg>
 );
-
-// ─── Flower SVG ───────────────────────────────────────────────────────────────
 
 const FlowerIcon = ({ size = 36 }: { size?: number }) => (
   <Svg width={size} height={size} viewBox="0 0 60 60" fill="none">
@@ -126,23 +141,30 @@ const FlowerIcon = ({ size = 36 }: { size?: number }) => (
   </Svg>
 );
 
-// ─── Donut Progress Ring ──────────────────────────────────────────────────────
-
 interface DonutRingProps {
   size: number;
   strokeWidth: number;
   progress: number;
 }
-
-const DonutRing: React.FC<DonutRingProps> = ({ size, strokeWidth, progress }) => {
+const DonutRing: React.FC<DonutRingProps> = ({
+  size,
+  strokeWidth,
+  progress,
+}) => {
   const r = (size - strokeWidth) / 2;
   const cx = size / 2;
   const cy = size / 2;
   const circumference = 2 * Math.PI * r;
   const dashOffset = circumference * (1 - progress);
-
   return (
-    <View style={{ width: size, height: size, alignItems: 'center', justifyContent: 'center' }}>
+    <View
+      style={{
+        width: size,
+        height: size,
+        alignItems: 'center',
+        justifyContent: 'center',
+      }}
+    >
       <Svg width={size} height={size} style={{ position: 'absolute' }}>
         <Defs>
           <SvgLinearGradient id="ringGrad" x1="0" y1="0" x2="1" y2="1">
@@ -151,17 +173,25 @@ const DonutRing: React.FC<DonutRingProps> = ({ size, strokeWidth, progress }) =>
             <Stop offset="1" stopColor="#B89CFF" />
           </SvgLinearGradient>
         </Defs>
-        <Circle cx={cx} cy={cy} r={r} stroke="#F5E6F5" strokeWidth={strokeWidth} fill="none" />
         <Circle
-          cx={cx} cy={cy} r={r}
+          cx={cx}
+          cy={cy}
+          r={r}
+          stroke="#F5E6F5"
+          strokeWidth={strokeWidth}
+          fill="none"
+        />
+        <Circle
+          cx={cx}
+          cy={cy}
+          r={r}
           stroke="url(#ringGrad)"
           strokeWidth={strokeWidth}
           fill="none"
           strokeDasharray={circumference}
           strokeDashoffset={dashOffset}
           strokeLinecap="round"
-          rotation={-90}
-          origin={`${cx}, ${cy}`}
+          transform={`rotate(-90, ${cx}, ${cy})`}
         />
       </Svg>
       <FlowerIcon size={size * 0.52} />
@@ -169,24 +199,27 @@ const DonutRing: React.FC<DonutRingProps> = ({ size, strokeWidth, progress }) =>
   );
 };
 
-// ─── Health Gauge ─────────────────────────────────────────────────────────────
-
 interface GaugeProps {
   score: number;
   size: number;
 }
-
 const HealthGauge: React.FC<GaugeProps> = ({ score, size }) => {
   const strokeWidth = 9;
   const r = (size - strokeWidth) / 2;
   const cx = size / 2;
   const cy = size / 2;
   const circumference = Math.PI * r;
-  const progress = score / 100;
-  const dashOffset = circumference * (1 - progress);
-
+  const dashOffset = circumference * (1 - score / 100);
   return (
-    <View style={{ width: size, height: size / 2 + strokeWidth, alignItems: 'center', justifyContent: 'flex-end', overflow: 'hidden' }}>
+    <View
+      style={{
+        width: size,
+        height: size / 2 + strokeWidth,
+        alignItems: 'center',
+        justifyContent: 'flex-end',
+        overflow: 'hidden',
+      }}
+    >
       <Svg width={size} height={size} style={{ position: 'absolute', top: 0 }}>
         <Defs>
           <SvgLinearGradient id="gaugeGrad" x1="0" y1="1" x2="1" y2="0">
@@ -195,64 +228,71 @@ const HealthGauge: React.FC<GaugeProps> = ({ score, size }) => {
           </SvgLinearGradient>
         </Defs>
         <Circle
-          cx={cx} cy={cy} r={r}
-          stroke="#E8F5E9" strokeWidth={strokeWidth} fill="none"
+          cx={cx}
+          cy={cy}
+          r={r}
+          stroke="#E8F5E9"
+          strokeWidth={strokeWidth}
+          fill="none"
           strokeDasharray={`${circumference} ${circumference}`}
           strokeDashoffset={0}
-          rotation={180} origin={`${cx}, ${cy}`}
+          transform={`rotate(180, ${cx}, ${cy})`}
         />
         <Circle
-          cx={cx} cy={cy} r={r}
-          stroke="url(#gaugeGrad)" strokeWidth={strokeWidth} fill="none"
+          cx={cx}
+          cy={cy}
+          r={r}
+          stroke="url(#gaugeGrad)"
+          strokeWidth={strokeWidth}
+          fill="none"
           strokeDasharray={`${circumference} ${circumference}`}
           strokeDashoffset={dashOffset}
           strokeLinecap="round"
-          rotation={180} origin={`${cx}, ${cy}`}
+          transform={`rotate(180, ${cx}, ${cy})`}
         />
       </Svg>
     </View>
   );
 };
 
-// ─── Quick Action Button ──────────────────────────────────────────────────────
-
 interface QuickActionProps {
   icon: React.ReactNode;
   label: string;
   onPress?: () => void;
 }
-
 const QuickAction: React.FC<QuickActionProps> = ({ icon, label, onPress }) => (
-  <TouchableOpacity style={styles.quickAction} onPress={onPress} activeOpacity={0.7}>
+  <TouchableOpacity
+    style={styles.quickAction}
+    onPress={onPress}
+    activeOpacity={0.7}
+    accessibilityLabel={label}
+    accessibilityRole="button"
+  >
     <View style={styles.quickActionIcon}>{icon}</View>
     <Text style={styles.quickActionLabel}>{label}</Text>
   </TouchableOpacity>
 );
 
-// ─── Phase Dot ────────────────────────────────────────────────────────────────
-
 const PhaseDot = ({ color }: { color: string }) => (
   <View style={[styles.phaseDot, { backgroundColor: color }]} />
 );
-
-// ─── Calendar Data ────────────────────────────────────────────────────────────
 
 const MAY_2024_WEEKS: DayData[][] = [
   [
     { day: 28, mark: null, isOutside: true },
     { day: 29, mark: null, isOutside: true },
     { day: 30, mark: null, isOutside: true },
-    { day: 1,  mark: null },
-    { day: 2,  mark: null },
-    { day: 3,  mark: null },
-    { day: 4,  mark: null },
+    { day: 1, mark: null },
+    { day: 2, mark: null },
+    { day: 3, mark: null },
+    { day: 4, mark: null },
   ],
   [
-    { day: 5,  mark: null },
-    { day: 6,  mark: null },
-    { day: 7,  mark: 'fertility' },
-    { day: 8,  mark: null },
-    { day: 9,  mark: null },
+    { day: 5, mark: null },
+    { day: 6, mark: null },
+    { day: 7, mark: 'fertility' },
+    { day: 8, mark: null },
+    { day: 9, mark: null },
     { day: 10, mark: null },
     { day: 11, mark: null },
   ],
@@ -281,38 +321,30 @@ const MAY_2024_WEEKS: DayData[][] = [
     { day: 29, mark: null },
     { day: 30, mark: null },
     { day: 31, mark: null },
-    { day: 1,  mark: null, isOutside: true },
+    { day: 1, mark: null, isOutside: true },
   ],
 ];
 
+// Full names avoid duplicate key collision (Mon/Tue/Thu vs M/T/T)
 const WEEK_DAYS = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
-
-const MARK_COLORS: Record<string, string> = {
-  period:    Colors.primaryPink,
-  fertility: Colors.lavender,
-  ovulation: Colors.ovulation,
-  pms:       Colors.wellnessEvent,
-  selfcare:  Colors.selfCare,
-  today:     Colors.primaryPink,
-};
-
-// ─── Day Cell ─────────────────────────────────────────────────────────────────
 
 interface DayCellProps {
   data: DayData;
 }
-
 const DayCell: React.FC<DayCellProps> = ({ data }) => {
   if (data.day === null) return <View style={styles.dayCell} />;
-
   const isToday = data.isToday;
   const hasRing = data.mark === 'period' && !isToday;
   const hasBg = isToday;
   const isOvulation = data.mark === 'ovulation';
   const isPms = data.mark === 'pms';
-
   return (
-    <View style={styles.dayCell}>
+    <View
+      style={styles.dayCell}
+      accessibilityLabel={`${data.day}${isToday ? ', today' : ''}${
+        data.mark ? `, ${data.mark}` : ''
+      }`}
+    >
       <View
         style={[
           styles.dayCellInner,
@@ -320,7 +352,10 @@ const DayCell: React.FC<DayCellProps> = ({ data }) => {
           hasRing && { borderWidth: 1.5, borderColor: Colors.primaryPink },
           isOvulation && { backgroundColor: Colors.lavender },
           isPms && { backgroundColor: Colors.wellnessEvent },
-          data.mark === 'selfcare' && { borderWidth: 1.5, borderColor: Colors.selfCare },
+          data.mark === 'selfcare' && {
+            borderWidth: 1.5,
+            borderColor: Colors.selfCare,
+          },
         ]}
       >
         <Text
@@ -338,38 +373,32 @@ const DayCell: React.FC<DayCellProps> = ({ data }) => {
   );
 };
 
-// ─── CalendarScreen ───────────────────────────────────────────────────────────
-
 const CalendarScreen: React.FC = () => {
   const [currentMonth] = useState('May 2024');
-  const cardAnim = useRef(new Animated.Value(0)).current;
-  const cardSlide = useRef(new Animated.Value(16)).current;
+  const cardOpacity = useSharedValue(0);
+  const cardTranslateY = useSharedValue(16);
 
   useEffect(() => {
-    Animated.parallel([
-      Animated.timing(cardAnim, {
-        toValue: 1,
-        duration: 420,
-        delay: 150,
-        useNativeDriver: true,
-      }),
-      Animated.timing(cardSlide, {
-        toValue: 0,
-        duration: 420,
-        delay: 150,
-        useNativeDriver: true,
-      }),
-    ]).start();
+    cardOpacity.value = withDelay(150, withTiming(1, { duration: 420 }));
+    cardTranslateY.value = withDelay(150, withTiming(0, { duration: 420 }));
   }, []);
+
+  const cardAnimStyle = useAnimatedStyle(() => ({
+    opacity: cardOpacity.value,
+    transform: [{ translateY: cardTranslateY.value }],
+  }));
 
   return (
     <SafeAreaView style={styles.safeArea} edges={['top']}>
       <StatusBar barStyle="dark-content" backgroundColor={Colors.background} />
-
-      {/* ── Header ── */}
       <View style={styles.header}>
         <Text style={styles.headerTitle}>Calendar</Text>
-        <TouchableOpacity style={styles.iconBtn} activeOpacity={0.7}>
+        <TouchableOpacity
+          style={styles.iconBtn}
+          activeOpacity={0.7}
+          accessibilityLabel="Calendar options"
+          accessibilityRole="button"
+        >
           <CalendarIconSvg />
         </TouchableOpacity>
       </View>
@@ -379,26 +408,40 @@ const CalendarScreen: React.FC = () => {
         contentContainerStyle={styles.scrollContent}
         showsVerticalScrollIndicator={false}
       >
-        {/* ── Calendar Card ── */}
         <View style={styles.calendarCard}>
           <View style={styles.monthRow}>
-            <TouchableOpacity style={styles.chevronBtn} activeOpacity={0.7}>
+            <TouchableOpacity
+              style={styles.chevronBtn}
+              activeOpacity={0.7}
+              accessibilityLabel="Previous month"
+              accessibilityRole="button"
+            >
               <Text style={styles.chevron}>‹</Text>
             </TouchableOpacity>
             <Text style={styles.monthText}>{currentMonth}</Text>
             <View style={styles.monthNavRight}>
-              <TouchableOpacity style={styles.chevronBtn} activeOpacity={0.7}>
+              <TouchableOpacity
+                style={styles.chevronBtn}
+                activeOpacity={0.7}
+                accessibilityLabel="Previous month"
+                accessibilityRole="button"
+              >
                 <Text style={styles.chevron}>‹</Text>
               </TouchableOpacity>
-              <TouchableOpacity style={styles.chevronBtn} activeOpacity={0.7}>
+              <TouchableOpacity
+                style={styles.chevronBtn}
+                activeOpacity={0.7}
+                accessibilityLabel="Next month"
+                accessibilityRole="button"
+              >
                 <Text style={styles.chevron}>›</Text>
               </TouchableOpacity>
             </View>
           </View>
 
           <View style={styles.weekRow}>
-            {WEEK_DAYS.map(d => (
-              <View key={d} style={styles.weekDayCell}>
+            {WEEK_DAYS.map((d, index) => (
+              <View key={index} style={styles.weekDayCell}>
                 <Text style={styles.weekDayText}>{d}</Text>
               </View>
             ))}
@@ -413,14 +456,7 @@ const CalendarScreen: React.FC = () => {
           ))}
         </View>
 
-        {/* ── Main Period Tracker Card ── */}
-        <Animated.View
-          style={[
-            styles.mainCard,
-            { opacity: cardAnim, transform: [{ translateY: cardSlide }] },
-          ]}
-        >
-          {/* Phase Info + Donut Ring */}
+        <Animated.View style={[styles.mainCard, cardAnimStyle]}>
           <View style={styles.phaseRow}>
             <View style={styles.phaseLeft}>
               <Text style={styles.currentPhaseLabel}>Current Phase</Text>
@@ -434,33 +470,35 @@ const CalendarScreen: React.FC = () => {
 
           <View style={styles.divider} />
 
-          {/* Phase List */}
           <View style={styles.phaseList}>
-            <View style={styles.phaseItem}>
-              <PhaseDot color={Colors.primaryPink} />
-              <Text style={styles.phaseItemLabel}>Period</Text>
-              <Text style={styles.phaseItemDate}>May 10 – May 14</Text>
-            </View>
-            <View style={styles.phaseItem}>
-              <PhaseDot color={Colors.lavender} />
-              <Text style={styles.phaseItemLabel}>Fertility Window</Text>
-              <Text style={styles.phaseItemDate}>May 18 – May 24</Text>
-            </View>
-            <View style={styles.phaseItem}>
-              <PhaseDot color="#7CCF8A" />
-              <Text style={styles.phaseItemLabel}>Ovulation</Text>
-              <Text style={styles.phaseItemDate}>May 22</Text>
-            </View>
-            <View style={styles.phaseItem}>
-              <PhaseDot color={Colors.warning} />
-              <Text style={styles.phaseItemLabel}>PMS Window</Text>
-              <Text style={styles.phaseItemDate}>May 28 – May 31</Text>
-            </View>
+            {[
+              {
+                color: Colors.primaryPink,
+                label: 'Period',
+                date: 'May 10 – May 14',
+              },
+              {
+                color: Colors.lavender,
+                label: 'Fertility Window',
+                date: 'May 18 – May 24',
+              },
+              { color: '#7CCF8A', label: 'Ovulation', date: 'May 22' },
+              {
+                color: Colors.warning,
+                label: 'PMS Window',
+                date: 'May 28 – May 31',
+              },
+            ].map(item => (
+              <View key={item.label} style={styles.phaseItem}>
+                <PhaseDot color={item.color} />
+                <Text style={styles.phaseItemLabel}>{item.label}</Text>
+                <Text style={styles.phaseItemDate}>{item.date}</Text>
+              </View>
+            ))}
           </View>
 
           <View style={styles.divider} />
 
-          {/* Quick Actions */}
           <View style={styles.quickActionsRow}>
             <QuickAction icon={<SymptomsIcon />} label="Symptoms" />
             <QuickAction icon={<MoodIcon />} label="Mood" />
@@ -469,13 +507,7 @@ const CalendarScreen: React.FC = () => {
           </View>
         </Animated.View>
 
-        {/* ── Cycle Health Score Card ── */}
-        <Animated.View
-          style={[
-            styles.healthCard,
-            { opacity: cardAnim, transform: [{ translateY: cardSlide }] },
-          ]}
-        >
+        <Animated.View style={[styles.healthCard, cardAnimStyle]}>
           <View style={styles.healthLeft}>
             <Text style={styles.healthTitle}>Cycle Health Score</Text>
             <Text style={styles.healthScore}>Good</Text>
@@ -497,21 +529,10 @@ const CalendarScreen: React.FC = () => {
 
 export default CalendarScreen;
 
-// ─── Styles ───────────────────────────────────────────────────────────────────
 const styles = StyleSheet.create({
-  safeArea: {
-    flex: 1,
-    backgroundColor: Colors.background,
-  },
-  scroll: {
-    flex: 1,
-  },
-  scrollContent: {
-    paddingHorizontal: 16,
-    paddingBottom: 20,
-  },
-
-  // Header
+  safeArea: { flex: 1, backgroundColor: Colors.background },
+  scroll: { flex: 1 },
+  scrollContent: { paddingHorizontal: 16, paddingBottom: 20 },
   header: {
     flexDirection: 'row',
     justifyContent: 'space-between',
@@ -539,8 +560,6 @@ const styles = StyleSheet.create({
     shadowRadius: 4,
     elevation: 2,
   },
-
-  // Calendar card
   calendarCard: {
     backgroundColor: '#FFFFFF',
     borderRadius: 20,
@@ -552,8 +571,6 @@ const styles = StyleSheet.create({
     shadowRadius: 10,
     elevation: 3,
   },
-
-  // Month navigation
   monthRow: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -567,10 +584,7 @@ const styles = StyleSheet.create({
     flex: 1,
     marginLeft: 4,
   },
-  monthNavRight: {
-    flexDirection: 'row',
-    gap: 2,
-  },
+  monthNavRight: { flexDirection: 'row', gap: 2 },
   chevronBtn: {
     width: 30,
     height: 30,
@@ -583,29 +597,10 @@ const styles = StyleSheet.create({
     fontWeight: '400',
     lineHeight: 26,
   },
-
-  // Week days
-  weekRow: {
-    flexDirection: 'row',
-    marginBottom: 2,
-  },
-  weekDayCell: {
-    flex: 1,
-    alignItems: 'center',
-    paddingVertical: 4,
-  },
-  weekDayText: {
-    fontSize: 11,
-    fontWeight: '600',
-    color: Colors.textSecondary,
-  },
-
-  // Day cells
-  dayCell: {
-    flex: 1,
-    alignItems: 'center',
-    paddingVertical: 3,
-  },
+  weekRow: { flexDirection: 'row', marginBottom: 2 },
+  weekDayCell: { flex: 1, alignItems: 'center', paddingVertical: 4 },
+  weekDayText: { fontSize: 11, fontWeight: '600', color: Colors.textSecondary },
+  dayCell: { flex: 1, alignItems: 'center', paddingVertical: 3 },
   dayCellInner: {
     width: 34,
     height: 34,
@@ -613,21 +608,9 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
-  dayText: {
-    fontSize: 13,
-    fontWeight: '600',
-    color: Colors.textPrimary,
-  },
-  dayTextOutside: {
-    color: '#C4C4C4',
-    fontWeight: '400',
-  },
-  dayTextToday: {
-    color: '#FFFFFF',
-    fontWeight: '800',
-  },
-
-  // Main period tracker card
+  dayText: { fontSize: 13, fontWeight: '600', color: Colors.textPrimary },
+  dayTextOutside: { color: '#C4C4C4', fontWeight: '400' },
+  dayTextToday: { color: '#FFFFFF', fontWeight: '800' },
   mainCard: {
     backgroundColor: '#FFFFFF',
     borderRadius: 24,
@@ -640,18 +623,13 @@ const styles = StyleSheet.create({
     elevation: 5,
     marginBottom: 16,
   },
-
-  // Phase row
   phaseRow: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
     marginBottom: 18,
   },
-  phaseLeft: {
-    flex: 1,
-    paddingRight: 12,
-  },
+  phaseLeft: { flex: 1, paddingRight: 12 },
   currentPhaseLabel: {
     fontSize: 12,
     color: Colors.textSecondary,
@@ -672,54 +650,20 @@ const styles = StyleSheet.create({
     paddingVertical: 6,
     alignSelf: 'flex-start',
   },
-  cycleDayText: {
-    color: '#FFFFFF',
-    fontSize: 13,
-    fontWeight: '700',
-  },
-
-  // Divider
-  divider: {
-    height: 1,
-    backgroundColor: '#F0E6EB',
-    marginVertical: 14,
-  },
-
-  // Phase list
-  phaseList: {
-    gap: 12,
-  },
-  phaseItem: {
-    flexDirection: 'row',
-    alignItems: 'center',
-  },
-  phaseDot: {
-    width: 11,
-    height: 11,
-    borderRadius: 6,
-    marginRight: 10,
-  },
+  cycleDayText: { color: '#FFFFFF', fontSize: 13, fontWeight: '700' },
+  divider: { height: 1, backgroundColor: '#F0E6EB', marginVertical: 14 },
+  phaseList: { gap: 12 },
+  phaseItem: { flexDirection: 'row', alignItems: 'center' },
+  phaseDot: { width: 11, height: 11, borderRadius: 6, marginRight: 10 },
   phaseItemLabel: {
     flex: 1,
     fontSize: 14,
     color: Colors.textPrimary,
     fontWeight: '500',
   },
-  phaseItemDate: {
-    fontSize: 14,
-    color: Colors.textPrimary,
-    fontWeight: '400',
-  },
-
-  // Quick actions
-  quickActionsRow: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-  },
-  quickAction: {
-    alignItems: 'center',
-    gap: 6,
-  },
+  phaseItemDate: { fontSize: 14, color: Colors.textPrimary, fontWeight: '400' },
+  quickActionsRow: { flexDirection: 'row', justifyContent: 'space-between' },
+  quickAction: { alignItems: 'center', gap: 6 },
   quickActionIcon: {
     width: 56,
     height: 56,
@@ -734,8 +678,6 @@ const styles = StyleSheet.create({
     fontWeight: '500',
     textAlign: 'center',
   },
-
-  // Health score card
   healthCard: {
     backgroundColor: '#FFFFFF',
     borderRadius: 24,
@@ -750,20 +692,14 @@ const styles = StyleSheet.create({
     shadowRadius: 16,
     elevation: 5,
   },
-  healthLeft: {
-    flex: 1,
-  },
+  healthLeft: { flex: 1 },
   healthTitle: {
     fontSize: 16,
     fontWeight: '700',
     color: Colors.textPrimary,
     marginBottom: 6,
   },
-  healthScore: {
-    fontSize: 22,
-    fontWeight: '800',
-    color: '#4CAF50',
-  },
+  healthScore: { fontSize: 22, fontWeight: '800', color: '#4CAF50' },
   gaugeWrapper: {
     width: 96,
     height: 60,
@@ -771,11 +707,7 @@ const styles = StyleSheet.create({
     justifyContent: 'flex-end',
     position: 'relative',
   },
-  gaugeCenter: {
-    position: 'absolute',
-    bottom: 4,
-    alignItems: 'center',
-  },
+  gaugeCenter: { position: 'absolute', bottom: 4, alignItems: 'center' },
   gaugeNumber: {
     fontSize: 22,
     fontWeight: '800',
