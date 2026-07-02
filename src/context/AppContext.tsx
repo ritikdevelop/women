@@ -1,4 +1,11 @@
-import React, { createContext, useContext, useReducer, useEffect, ReactNode } from 'react';
+import React, {
+  createContext,
+  useContext,
+  useReducer,
+  useEffect,
+  useCallback,
+  ReactNode,
+} from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import {
   User,
@@ -155,21 +162,12 @@ const AppContext = createContext<AppContextType | undefined>(undefined);
 export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
   const [state, dispatch] = useReducer(appReducer, initialState);
 
-  useEffect(() => {
-    loadState();
-  }, []);
-
-  useEffect(() => {
-    if (!state.isLoading) {
-      saveState();
-    }
-  }, [state]);
-
-  const loadState = async () => {
+  // loadState has no deps — it only dispatches and never reads state
+  const loadState = useCallback(async () => {
     try {
       const saved = await AsyncStorage.getItem('appState');
       if (saved) {
-        const parsed = JSON.parse(saved);
+        const parsed = JSON.parse(saved) as Partial<AppState>;
         dispatch({ type: 'RESTORE_STATE', payload: parsed });
       } else {
         dispatch({ type: 'SET_LOADING', payload: false });
@@ -177,9 +175,10 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
     } catch {
       dispatch({ type: 'SET_LOADING', payload: false });
     }
-  };
+  }, []);
 
-  const saveState = async () => {
+  // saveState closes over individual state fields — stable ref, only changes when data changes
+  const saveState = useCallback(async () => {
     try {
       const toSave = {
         isOnboarded: state.isOnboarded,
@@ -203,7 +202,76 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
     } catch (e) {
       console.error('Failed to save state:', e);
     }
-  };
+  }, [
+    state.isOnboarded,
+    state.isAuthenticated,
+    state.user,
+    state.waterLogs,
+    state.moodEntries,
+    state.symptomEntries,
+    state.streak,
+    state.badges,
+    state.notifications,
+    state.chatMessages,
+    state.steps,
+    state.waterGoal,
+    state.stepGoal,
+    state.completedWorkouts,
+    state.meditationHistory,
+    state.currentCycleDay,
+  ]);
+
+  // Load persisted state once on mount
+  useEffect(() => {
+    loadState();
+  }, [loadState]);
+
+  // Destructure individual fields so useEffect dep-array does not include isLoading
+  const {
+    isOnboarded,
+    isAuthenticated,
+    user,
+    waterLogs,
+    moodEntries,
+    symptomEntries,
+    streak,
+    badges,
+    notifications,
+    chatMessages,
+    steps,
+    waterGoal,
+    stepGoal,
+    completedWorkouts,
+    meditationHistory,
+    currentCycleDay,
+    isLoading,
+  } = state;
+
+  // Persist only when meaningful data changes — isLoading excluded from triggering saves
+  useEffect(() => {
+    if (!isLoading) {
+      saveState();
+    }
+  }, [
+    isLoading,
+    isOnboarded,
+    isAuthenticated,
+    user,
+    waterLogs,
+    moodEntries,
+    symptomEntries,
+    streak,
+    badges,
+    notifications,
+    chatMessages,
+    steps,
+    waterGoal,
+    stepGoal,
+    completedWorkouts,
+    meditationHistory,
+    currentCycleDay,
+    saveState,
+  ]);
 
   return (
     <AppContext.Provider value={{ state, dispatch }}>
